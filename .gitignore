@@ -1,0 +1,7 @@
+*.pyc
+*.bak
+*.o
+*.so
+dist
+build
+build.sh
