@@ -25,6 +25,7 @@ from ..tmatrix import TMatrix
 from ..tmatrix_psd import TMatrixPSD, GammaPSD
 from .. import orientation
 from .. import radar
+from .. import refractive
 from .. import tmatrix_aux
 
 
@@ -38,11 +39,11 @@ def run_tests():
        Runs several tests that test the Mie code. All tests should return ok.
        If they don't, please contact the author.
     """
-    suite = unittest.TestLoader().loadTestsFromTestCase(MieTests)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TMatrixTests)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 
-class MieTests(unittest.TestCase):
+class TMatrixTests(unittest.TestCase):
 
     def test_single(self):
         """Test a single-orientation case
@@ -158,7 +159,8 @@ class MieTests(unittest.TestCase):
     def test_radar(self):
         """Test that the radar properties are computed correctly
         """
-        tm = TMatrixPSD(lam=6.5, m=complex(1.5,0.5))
+        tm = TMatrixPSD(lam=tmatrix_aux.wl_C, 
+            m=refractive.m_w_10C[tmatrix_aux.wl_C])
         tm.psd = GammaPSD(D0=2.0, Nw=1e3, mu=4)        
         tm.psd_eps_func = lambda D: 1.0/drop_ar(D)
         tm.D_max = 10.0
@@ -180,16 +182,16 @@ class MieTests(unittest.TestCase):
         A_h = radar.Ai(tm)
         A_v = radar.Ai(tm, False)
 
-        radar_xsect_h_ref = 33.935739265073906
-        Z_h_ref = 212.85233999555203
-        Z_v_ref = 206.48237118231344
-        ldr_ref = 0.00019958885896302625
-        Zdr_ref = 1.0308499402479945
-        delta_hv_ref = 0.027980231467473193
-        rho_hv_ref = 0.99963160720265998
-        Kdp_ref = -0.11623028880886239
-        A_h_ref = 1.1860506247582714
-        A_v_ref = 1.1506507531135013
+        radar_xsect_h_ref = 0.22176446104570832
+        Z_h_ref = 6383.7337508170367
+        Z_v_ref = 5066.7211159239041
+        ldr_ref = 0.0021960631381576982
+        Zdr_ref = 1.2599339108588334
+        delta_hv_ref = -0.00021227791258845272
+        rho_hv_ref = 0.99603080515530196
+        Kdp_ref = 0.19334676281254526
+        A_h_ref = 0.018923976608842246
+        A_v_ref = 0.016366340655084185
 
         for (val, ref) in zip(
             (radar_xsect_h, Z_h, Z_v, ldr, Zdr, delta_hv, rho_hv, Kdp, A_h, 

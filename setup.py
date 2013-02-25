@@ -10,14 +10,14 @@ Requires NumPy and SciPy.
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('pytmatrix', parent_package, top_path,
-        version = '0.1.1',
+        version = '0.1.2',
         author  = "Jussi Leinonen",
         author_email = "jsleinonen@gmail.com",
         description = "T-matrix scattering computations",
         license = "MIT",
         url = 'http://code.google.com/p/pytmatrix/',
         download_url = \
-            'http://pytmatrix.googlecode.com/files/pytmatrix-0.1.1.zip',
+            'http://pytmatrix.googlecode.com/files/pytmatrix-0.1.2.zip',
         long_description = long_description,
         classifiers = [
             "Development Status :: 4 - Beta",
@@ -46,12 +46,6 @@ def configuration(parent_package='',top_path=None):
             'pytmatrix/gaussqr/wrapper.c'],        
         )
 
-    config.add_data_files('pytmatrix/gaussqr/source/util/linalg.hpp',
-        'pytmatrix/gaussqr/source/util/precision.h')
-
-    config.add_data_files('pytmatrix/ice_refr.dat')
-    config.add_data_files('pytmatrix/fortran_tm/ampld.par.f')
-
     return config
 
 
@@ -60,6 +54,12 @@ if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(configuration=configuration,
         packages = ['pytmatrix','pytmatrix.test','pytmatrix.fortran_tm',
-            'pytmatrix.gaussqr'],
-        platforms = ["any"],
-        requires = ["numpy", "scipy"])
+            'pytmatrix.gaussqr'],        
+        package_data = {
+            'pytmatrix': ['ice_refr.dat'],
+            'pytmatrix.fortran_tm': ['ampld.par.f'],
+            'pytmatrix.gaussqr': 
+                ['source/util/linalg.hpp', 'source/util/precision.h']
+        },
+        platforms = ['any'],
+        requires = ['numpy', 'scipy'])
