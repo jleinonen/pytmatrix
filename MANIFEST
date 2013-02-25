@@ -6,7 +6,6 @@ pytmatrix/ice_refr.dat
 pytmatrix/orientation.py
 pytmatrix/radar.py
 pytmatrix/refractive.py
-pytmatrix/scatter.py
 pytmatrix/tmatrix.py
 pytmatrix/tmatrix_aux.py
 pytmatrix/tmatrix_psd.py
