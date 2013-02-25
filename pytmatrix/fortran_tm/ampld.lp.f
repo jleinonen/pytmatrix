@@ -25,7 +25,7 @@ C   The code has been developed by Michael Mishchenko at the NASA
 C   Goddard Institute for Space Studies, New York.  The development
 C   of the code was supported by the NASA Radiation Sciences Program.
 
-C   We only that in any publication using the code the source of
+C   We only request that in any publication using the code the source of
 C   the code be acknowledged and relevant references (see below) be 
 C   made.
 

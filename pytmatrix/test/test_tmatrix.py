@@ -25,7 +25,6 @@ from ..tmatrix import TMatrix
 from ..tmatrix_psd import TMatrixPSD, GammaPSD
 from .. import orientation
 from .. import radar
-from .. import scatter
 from .. import tmatrix_aux
 
 
@@ -76,7 +75,7 @@ class MieTests(unittest.TestCase):
         """
         tm = TMatrix(axi=2.0, lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
         tm.or_pdf = orientation.gaussian_pdf(20.0)
-        tm.scatter = scatter.scatter_averaged_adaptive
+        tm.orient = orientation.orient_averaged_adaptive
         (S, Z) = tm.get_SZ()
         
         S_ref = np.array(
@@ -104,7 +103,7 @@ class MieTests(unittest.TestCase):
         """
         tm = TMatrix(axi=2.0, lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
         tm.or_pdf = orientation.gaussian_pdf(20.0)
-        tm.scatter = scatter.scatter_averaged_fixed
+        tm.orient = orientation.orient_averaged_fixed
         (S, Z) = tm.get_SZ()
         
         S_ref = np.array(
@@ -164,7 +163,7 @@ class MieTests(unittest.TestCase):
         tm.psd_eps_func = lambda D: 1.0/drop_ar(D)
         tm.D_max = 10.0
         tm.or_pdf = orientation.gaussian_pdf(20.0)
-        tm.scatter = scatter.scatter_averaged_fixed
+        tm.orient = orientation.orient_averaged_fixed
         tm.geometries = (tmatrix_aux.geom_horiz_back, 
             tmatrix_aux.geom_horiz_forw)
         tm.init_scatter_table()

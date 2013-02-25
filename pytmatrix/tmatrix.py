@@ -21,7 +21,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from fortran_tm import pytmatrix
 from gaussqr import pygaussqr
-import scatter
 import orientation
 
 
@@ -84,7 +83,7 @@ class TMatrix(object):
         self.phi0 = 0.0
         self.phi = 180.0
         self.Kw_sqr = 0.93
-        self.scatter = scatter.scatter_single
+        self.orient = orientation.orient_single
         self.or_pdf = orientation.gaussian_pdf()
         self.n_alpha = 5
         self.n_beta = 10
@@ -95,7 +94,7 @@ class TMatrix(object):
 
         attrs = ("axi", "rat", "lam", "m", "eps", "np", "ddelt", "ndgs", 
             "alpha", "beta", "thet0", "thet", "phi0", "phi", "Kw_sqr",
-            "scatter", "or_pdf", "n_alpha", "n_beta")
+            "orient", "or_pdf", "n_alpha", "n_beta")
         for k in kwargs:
             if k in attrs:
                 self.__dict__[k] = kwargs[k]
@@ -135,7 +134,7 @@ class TMatrix(object):
         """Mark the amplitude and scattering matrices as up to date.
         """
         self._scatter_signature = (self.thet0, self.thet, self.phi0, self.phi,
-                                self.alpha, self.beta, self.scatter)
+                                self.alpha, self.beta, self.orient)
         self._orient_signature = (self.or_pdf, self.n_alpha, self.n_beta)
 
 
@@ -151,11 +150,11 @@ class TMatrix(object):
             self._init_orient()
 
         scatter_outdated = self._scatter_signature != (self.thet0, self.thet, 
-            self.phi0, self.phi, self.alpha, self.beta, self.scatter)
+            self.phi0, self.phi, self.alpha, self.beta, self.orient)
 
         outdated = tm_outdated or orient_outdated or scatter_outdated
         if outdated:
-            (self._S, self._Z) = self.scatter(self)
+            (self._S, self._Z) = self.orient(self)
             self._set_scatter_signature()
 
         return (self._S, self._Z)

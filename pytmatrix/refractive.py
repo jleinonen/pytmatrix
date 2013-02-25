@@ -19,8 +19,8 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
+from os import path
 import numpy as np
-from pylab import load
 from scipy import interpolate
 from tmatrix_aux import wl_S, wl_C, wl_X, wl_Ku, wl_Ka, wl_W
 
@@ -142,4 +142,4 @@ def ice_refractive(file):
 
 module_path = path.split(path.abspath(__file__))[0]
 
-mi = refract.ice_refractive(module_path + '/ice_refr.dat')
+mi = ice_refractive(module_path + '/ice_refr.dat')

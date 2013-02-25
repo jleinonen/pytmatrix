@@ -26,6 +26,7 @@ def radar_xsect(tm, h_pol=True):
     """Radar cross section for the current setup.    
 
     Args:
+        tm: a TMatrix instance.
         h_pol: If true (default), use horizontal polarization.
         If false, use vertical polarization.
 
@@ -45,6 +46,7 @@ def refl(tm, h_pol=True):
     """Reflectivity (with number concentration N=1) for the current setup.
 
     Args:
+        tm: a TMatrix instance.
         h_pol: If true (default), use horizontal polarization.
         If false, use vertical polarization.
 
@@ -56,20 +58,20 @@ def refl(tm, h_pol=True):
     """
     return tm.lam**4/(np.pi**5*tm.Kw_sqr) * radar_xsect(tm, h_pol)
 
-
-def Zi(tm, h_pol=True):
-    return refl(tm, h_pol)
+#alias for compatibility
+Zi = refl
 
 
 def ldr(tm, h_pol=True):
     """
-    Linear depolarizarion ratio (LDR) for the current setup
+    Linear depolarizarion ratio (LDR) for the current setup.
 
     Args:
+        tm: a TMatrix instance.
         h_pol: If true (default), return LDR_h.
         If false, return LDR_v.
 
-    Returs:
+    Returns:
        The LDR.
     """
     Z = tm.get_Z()
@@ -83,9 +85,12 @@ def ldr(tm, h_pol=True):
 
 def Zdr(tm):
     """
-    Differential reflectivity (Z_dr) for the current setup
+    Differential reflectivity (Z_dr) for the current setup.
 
-    Returs:
+    Args:
+        tm: a TMatrix instance.
+
+    Returns:
        The Z_dr.
     """
     return radar_xsect(tm, True)/radar_xsect(tm, False)
@@ -93,9 +98,12 @@ def Zdr(tm):
 
 def delta_hv(tm):
     """
-    Delta_hv for the current setup
+    Delta_hv for the current setup.
 
-    Returs:
+    Args:
+        tm: a TMatrix instance.
+
+    Returns:
        Delta_hv [rad].
     """
     Z = tm.get_Z()
@@ -104,9 +112,12 @@ def delta_hv(tm):
 
 def rho_hv(tm):
     """
-    Copolarized correlation (rho_hv) for the current setup
+    Copolarized correlation (rho_hv) for the current setup.
 
-    Returs:
+    Args:
+        tm: a TMatrix instance.
+
+    Returns:
        rho_hv.
     """
     Z = tm.get_Z()
@@ -118,13 +129,17 @@ def rho_hv(tm):
 
 def Kdp(tm):
     """
-    Specific differential phase (K_dp) for the current setup
+    Specific differential phase (K_dp) for the current setup.
 
-    Returs:
+    Args:
+        tm: a TMatrix instance.
+
+    Returns:
        K_dp [deg/km].
 
     NOTE: This only returns the correct value if the particle diameter and
-    wavelength are given in [mm].
+    wavelength are given in [mm]. The tm object should be set to forward
+    scattering geometry before calling this function.
     """
     S = tm.get_S()
     return 1e-3 * (180.0/np.pi) * tm.lam * (S[1,1]-S[0,0]).real
@@ -132,17 +147,18 @@ def Kdp(tm):
 
 def Ai(tm, h_pol=True):
     """
-    Specific attenuation (A) for the current setup
+    Specific attenuation (A) for the current setup.
 
     Parameters:
        h_pol (default True): compute attenuation for the horizontal polarization.
           If False, use vertical polarization.
 
-    Returs:
+    Returns:
        A [dB/km].
 
     NOTE: This only returns the correct value if the particle diameter and
-    wavelength are given in [mm].
+    wavelength are given in [mm]. The tm object should be set to forward
+    scattering geometry before calling this function.
     """
     S = tm.get_S()
     if h_pol:
