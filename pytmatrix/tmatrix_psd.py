@@ -19,6 +19,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
+import warnings
 from tmatrix import TMatrix
 from psd import PSDIntegrator, GammaPSD, BinnedPSD
 import tmatrix_aux
@@ -75,8 +76,13 @@ class TMatrixPSD(TMatrix):
         "psd_m_func": "m_func"
         }
 
-    def __init__(self, **kwargs):
+    def __init__(self, suppress_warning=False, **kwargs):
         super(TMatrixPSD, self).__init__(**kwargs)
+
+        if not suppress_warning:
+            warnings.warn("TMatrixPSD is deprecated. Use the " + \
+                "PSDIntegrator class and the psd_integrator property " + \
+                "of TMatrix instead.", DeprecationWarning)
 
         self.num_points = 500
         self.m_func = None

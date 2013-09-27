@@ -162,7 +162,7 @@ class TMatrixTests(unittest.TestCase):
     def test_radar(self):
         """Test that the radar properties are computed correctly
         """
-        tm = TMatrixPSD(lam=tmatrix_aux.wl_C, 
+        tm = TMatrixPSD(suppress_warning=True, lam=tmatrix_aux.wl_C, 
             m=refractive.m_w_10C[tmatrix_aux.wl_C])
         tm.psd = psd.GammaPSD(D0=2.0, Nw=1e3, mu=4)        
         tm.psd_eps_func = lambda D: 1.0/drop_ar(D)
