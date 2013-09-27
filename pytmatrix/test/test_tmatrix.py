@@ -22,11 +22,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import unittest
 import numpy as np
 from ..tmatrix import TMatrix
-from ..tmatrix_psd import TMatrixPSD, GammaPSD
+from ..tmatrix_psd import TMatrixPSD
 from .. import orientation
 from .. import radar
 from .. import refractive
 from .. import tmatrix_aux
+from .. import psd
 
 
 #some allowance for rounding errors etc
@@ -130,10 +131,12 @@ class TMatrixTests(unittest.TestCase):
     def test_psd(self):
         """Test a case that integrates over a particle size distribution
         """
-        tm = TMatrixPSD(lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
-        tm.psd = GammaPSD(D0=1.0, Nw=1e3, mu=4)
-        tm.D_max = 10.0
-        tm.init_scatter_table()
+        #tm = TMatrixPSD(lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
+        tm = TMatrix(lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
+        tm.psd_integrator = psd.PSDIntegrator()
+        tm.psd = psd.GammaPSD(D0=1.0, Nw=1e3, mu=4)
+        tm.psd_integrator.D_max = 10.0
+        tm.psd_integrator.init_scatter_table(tm)
         (S, Z) = tm.get_SZ()
 
         S_ref = np.array(
@@ -161,7 +164,7 @@ class TMatrixTests(unittest.TestCase):
         """
         tm = TMatrixPSD(lam=tmatrix_aux.wl_C, 
             m=refractive.m_w_10C[tmatrix_aux.wl_C])
-        tm.psd = GammaPSD(D0=2.0, Nw=1e3, mu=4)        
+        tm.psd = psd.GammaPSD(D0=2.0, Nw=1e3, mu=4)        
         tm.psd_eps_func = lambda D: 1.0/drop_ar(D)
         tm.D_max = 10.0
         tm.or_pdf = orientation.gaussian_pdf(20.0)

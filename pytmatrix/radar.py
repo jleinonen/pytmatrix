@@ -20,6 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import numpy as np
+from scatter import diff_xsect, ldr, pol_ext_xsect
 
 
 def radar_xsect(tm, h_pol=True):
@@ -31,15 +32,9 @@ def radar_xsect(tm, h_pol=True):
         If false, use vertical polarization.
 
     Returns:
-        The scattering cross section.
+        The radar cross section.
     """
-    Z = tm.get_Z()
-    if h_pol:
-        return 2 * np.pi * \
-            (Z[0,0] - Z[0,1] - Z[1,0] + Z[1,1])
-    else:
-        return 2 * np.pi * \
-            (Z[0,0] + Z[0,1] + Z[1,0] + Z[1,1])
+    return diff_xsect(tm, h_pol=h_pol)
 
 
 def refl(tm, h_pol=True):
@@ -60,27 +55,6 @@ def refl(tm, h_pol=True):
 
 #alias for compatibility
 Zi = refl
-
-
-def ldr(tm, h_pol=True):
-    """
-    Linear depolarizarion ratio (LDR) for the current setup.
-
-    Args:
-        tm: a TMatrix instance.
-        h_pol: If true (default), return LDR_h.
-        If false, return LDR_v.
-
-    Returns:
-       The LDR.
-    """
-    Z = tm.get_Z()
-    if h_pol:
-        return (Z[0,0] - Z[0,1] + Z[1,0] - Z[1,1]) / \
-               (Z[0,0] - Z[0,1] - Z[1,0] + Z[1,1])
-    else:
-        return (Z[0,0] + Z[0,1] - Z[1,0] - Z[1,1]) / \
-               (Z[0,0] + Z[0,1] + Z[1,0] + Z[1,1])
 
 
 def Zdr(tm):
@@ -160,8 +134,6 @@ def Ai(tm, h_pol=True):
     wavelength are given in [mm]. The tm object should be set to forward
     scattering geometry before calling this function.
     """
-    S = tm.get_S()
-    if h_pol:
-        return 8.686e-3 * tm.lam * S[1,1].imag
-    else:
-        return 8.686e-3 * tm.lam * S[0,0].imag
+    return 4.343e-3 * pol_ext_xsect(tm, h_pol=h_pol)
+
+

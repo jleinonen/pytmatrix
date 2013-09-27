@@ -1,6 +1,6 @@
 python module pytmatrix ! in 
     interface  ! in :pytmatrix
-        subroutine calctmat(axi,rat,lam,mrr,mri,eps,np,ddelt,ndgs,nmax) ! in :pytmatrix:ampld.lp.f
+        subroutine calctmat(axi,rat,lam,mrr,mri,eps,np,ddelt,ndgs,nmax,qsca,qext) ! in :pytmatrix:ampld.lp.f
             real*8 intent(in) :: axi
             real*8 intent(in) :: rat
             real*8 intent(in) :: lam

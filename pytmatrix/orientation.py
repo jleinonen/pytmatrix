@@ -21,7 +21,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import numpy as np
 from scipy.integrate import quad, dblquad
-from fortran_tm import pytmatrix
 
 
 def gaussian_pdf(std=10.0):
@@ -51,8 +50,7 @@ def uniform_pdf():
 
     Returns:
         pdf(x), a function that returns the value of the spherical Jacobian-
-        normalized uniform PDF with the given STD at x (degrees). It is 
-        normalized for the interval [0, 180].
+        normalized uniform PDF. It is normalized for the interval [0, 180].
     """
     norm_const = 1.0
     def pdf(x):
@@ -72,8 +70,7 @@ def orient_single(tm):
     Returns:
         The amplitude (S) and phase (Z) matrices.
     """
-    return pytmatrix.calcampl(tm.nmax, tm.lam, tm.thet0, tm.thet, tm.phi0, 
-        tm.phi, tm.alpha, tm.beta)   
+    return tm.get_SZ_single()
 
 
 def orient_averaged_adaptive(tm):
@@ -93,8 +90,7 @@ def orient_averaged_adaptive(tm):
     Z = np.zeros((4,4))
 
     def Sfunc(beta, alpha, i, j, real):
-        (S_ang, Z_ang) = pytmatrix.calcampl(tm.nmax, tm.lam, tm.thet0, 
-            tm.thet, tm.phi0, tm.phi, alpha, beta)
+        (S_ang, Z_ang) = tm.get_SZ_single(alpha=alpha, beta=beta)
         s = S_ang[i,j].real if real else S_ang[i,j].imag            
         return s * tm.or_pdf(beta)
 
@@ -107,8 +103,7 @@ def orient_averaged_adaptive(tm):
                 lambda x: 0.0, lambda x: 180.0, (i,j,False))[0]/360.0
 
     def Zfunc(beta, alpha, i, j):
-        (S_and, Z_ang) = pytmatrix.calcampl(tm.nmax, tm.lam, tm.thet0, 
-            tm.thet, tm.phi0, tm.phi, alpha, beta)
+        (S_and, Z_ang) = tm.get_SZ_single(alpha=alpha, beta=beta)
         return Z_ang[i,j] * tm.or_pdf(beta)
 
     ind = range(4)
@@ -140,8 +135,7 @@ def orient_averaged_fixed(tm):
 
     for alpha in ap:
         for (beta, w) in zip(tm.beta_p, tm.beta_w):
-            (S_ang, Z_ang) = pytmatrix.calcampl(tm.nmax, tm.lam, tm.thet0, 
-                tm.thet, tm.phi0, tm.phi, alpha, beta)
+            (S_ang, Z_ang) = tm.get_SZ_single(alpha=alpha, beta=beta)
             S += w * S_ang
             Z += w * Z_ang
 

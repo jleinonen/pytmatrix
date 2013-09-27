@@ -19,6 +19,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
+import numpy as np
 from fortran_tm import pytmatrix
 from gaussqr import pygaussqr
 import orientation
@@ -88,9 +89,13 @@ class TMatrix(object):
         self.n_alpha = 5
         self.n_beta = 10
 
-        self._tm_signature = ()
+        self._tm_signature = ()        
+        self._scatter_signature = ()
         self._orient_signature = ()
-        self._scatter_signature = ()        
+        self._psd_signature = ()
+        
+        self.psd_integrator = None
+        self.psd = None    
 
         attrs = ("axi", "rat", "lam", "m", "eps", "np", "ddelt", "ndgs", 
             "alpha", "beta", "thet0", "thet", "phi0", "phi", "Kw_sqr",
@@ -109,15 +114,26 @@ class TMatrix(object):
             angles.
         """
         (self.thet0, self.thet, self.phi0, self.phi, self.alpha, 
-            self.beta) = geom   
+            self.beta) = geom
+
+
+    def get_geometry(self):
+        """A convenience function to get the geometry variables.
+
+        Returns:
+            A tuple containing (thet0, thet, phi0, phi, alpha, beta).
+            See the TMatrix class documentation for a description of these
+            angles.
+        """
+        return (self.thet0, self.thet, self.phi0, self.phi, self.alpha, 
+            self.beta)
         
 
     def _init_tmatrix(self):
         """Initialize the T-matrix.
         """
-        self.nmax = pytmatrix.calctmat(self.axi, self.rat, self.lam, 
-            self.m.real, self.m.imag, self.eps, self.np, self.ddelt, 
-            self.ndgs)
+        self.nmax = pytmatrix.calctmat(self.axi, self.rat, self.lam, self.m.real, 
+            self.m.imag, self.eps, self.np, self.ddelt, self.ndgs)
         self._tm_signature = (self.axi, self.rat, self.lam, self.m,
             self.eps, self.np, self.ddelt, self.ndgs)        
 
@@ -127,7 +143,7 @@ class TMatrix(object):
         """
         (self.beta_p, self.beta_w) = pygaussqr.get_points_and_weights(
             self.or_pdf, 0, 180, self.n_beta)
-        self._orient_signature = (self.or_pdf, self.n_alpha, self.n_beta)
+        self._set_orient_signature()
 
 
     def _set_scatter_signature(self):
@@ -135,27 +151,82 @@ class TMatrix(object):
         """
         self._scatter_signature = (self.thet0, self.thet, self.phi0, self.phi,
                                 self.alpha, self.beta, self.orient)
-        self._orient_signature = (self.or_pdf, self.n_alpha, self.n_beta)
 
 
-    def get_SZ(self):
+    def _set_orient_signature(self):
+        self._orient_signature = (self.or_pdf, self.n_alpha, self.n_beta)   
+    
+
+    def _set_psd_signature(self):
+        self._psd_signature = (self.psd,)
+
+
+    def get_SZ_single(self, alpha=None, beta=None):
+        """Get the S and Z matrices for a single orientation.
+        """
+        if alpha == None:
+            alpha = self.alpha
+        if beta == None:
+            beta = self.beta
+
         tm_outdated = self._tm_signature != (self.axi, self.rat, self.lam, 
             self.m, self.eps, self.np, self.ddelt, self.ndgs)
         if tm_outdated:
             self._init_tmatrix()
 
+        scatter_outdated = self._scatter_signature != (self.thet0, self.thet, 
+            self.phi0, self.phi, alpha, beta, self.orient)
+
+        outdated = tm_outdated or scatter_outdated
+
+        if outdated:
+            (self._S_single, self._Z_single) = pytmatrix.calcampl(self.nmax, 
+                self.lam, self.thet0, self.thet, self.phi0, self.phi, alpha, 
+                beta)
+            self._set_scatter_signature()
+
+        return (self._S_single, self._Z_single)
+
+
+    def get_SZ_orient(self):
+        """Get the S and Z matrices using the specified orientation averaging.
+        """
+
+        tm_outdated = self._tm_signature != (self.axi, self.rat, self.lam, 
+            self.m, self.eps, self.np, self.ddelt, self.ndgs)
+        scatter_outdated = self._scatter_signature != (self.thet0, self.thet, 
+            self.phi0, self.phi, self.alpha, self.beta, self.orient)
+
         orient_outdated = self._orient_signature != \
             (self.or_pdf, self.n_alpha, self.n_beta)
         if orient_outdated:
             self._init_orient()
+        
+        outdated = tm_outdated or scatter_outdated or orient_outdated
 
-        scatter_outdated = self._scatter_signature != (self.thet0, self.thet, 
-            self.phi0, self.phi, self.alpha, self.beta, self.orient)
-
-        outdated = tm_outdated or orient_outdated or scatter_outdated
         if outdated:
-            (self._S, self._Z) = self.orient(self)
+            (self._S_orient, self._Z_orient) = self.orient(self)
             self._set_scatter_signature()
+
+        return (self._S_orient, self._Z_orient)
+
+
+    def get_SZ(self):
+        """Get the S and Z matrices using the current parameters.
+        """
+        if self.psd_integrator is None:
+            (self._S, self._Z) = self.get_SZ_orient()
+        else:
+            scatter_outdated = self._scatter_signature != (self.thet0, self.thet, 
+                self.phi0, self.phi, self.alpha, self.beta, self.orient)            
+            psd_outdated = self._psd_signature != (self.psd,)
+            outdated = scatter_outdated or psd_outdated
+
+            if outdated:
+                (self._S, self._Z) = self.psd_integrator(self.psd, 
+                    self.get_geometry())
+                self._set_scatter_signature()
+                self._set_psd_signature()
 
         return (self._S, self._Z)
 
@@ -166,14 +237,4 @@ class TMatrix(object):
 
     def get_Z(self):
         return self.get_SZ()[1]
-
-
-    
-
-    
-
-
-
-
-
 
