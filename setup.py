@@ -43,7 +43,8 @@ if __name__ == "__main__":
 
     from numpy.distutils.core import setup
     setup(configuration=configuration,
-        packages = ['pytmatrix','pytmatrix.test','pytmatrix.fortran_tm'],        
+        packages = ['pytmatrix','pytmatrix.test','pytmatrix.quadrature',
+            'pytmatrix.fortran_tm'],        
         package_data = {
             'pytmatrix': ['ice_refr.dat'],
             'pytmatrix.fortran_tm': ['ampld.par.f']
