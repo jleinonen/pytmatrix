@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import numpy as np
 from fortran_tm import pytmatrix
-from gaussqr import pygaussqr
+from quadrature import quadrature
 import orientation
 
 
@@ -141,7 +141,7 @@ class TMatrix(object):
     def _init_orient(self):
         """Retrieve the quadrature points and weights.
         """
-        (self.beta_p, self.beta_w) = pygaussqr.get_points_and_weights(
+        (self.beta_p, self.beta_w) = quadrature.get_points_and_weights(
             self.or_pdf, 0, 180, self.n_beta)
         self._set_orient_signature()
 
@@ -237,4 +237,8 @@ class TMatrix(object):
 
     def get_Z(self):
         return self.get_SZ()[1]
+
+
+    def get_Csca(self):
+        get_geometry()
 

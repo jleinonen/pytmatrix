@@ -1,2 +1,0 @@
-USEFUL:
-	http://www.efunda.com/math/num_integration/findgausslaguerre.cfm        

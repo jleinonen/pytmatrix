@@ -24,7 +24,6 @@ def configuration(parent_package='',top_path=None):
             "Intended Audience :: Science/Research",
             "License :: OSI Approved :: MIT License",
             "Operating System :: OS Independent",
-            "Programming Language :: C++",
             "Programming Language :: Fortran",
             "Programming Language :: Python",
             "Topic :: Scientific/Engineering :: Physics",
@@ -37,15 +36,6 @@ def configuration(parent_package='',top_path=None):
             'pytmatrix/fortran_tm/lpd.f'],
         )
 
-    config.add_extension('gaussqr.pygaussqr',
-        sources=['pytmatrix/gaussqr/source/fejer2.cpp',
-            'pytmatrix/gaussqr/source/fft/fftpack.cpp',
-            'pytmatrix/gaussqr/source/gaussqr.cpp',
-            'pytmatrix/gaussqr/source/lanczos.cpp',
-            'pytmatrix/gaussqr/source/mtqli.cpp',
-            'pytmatrix/gaussqr/wrapper.c'],        
-        )
-
     return config
 
 
@@ -53,13 +43,10 @@ if __name__ == "__main__":
 
     from numpy.distutils.core import setup
     setup(configuration=configuration,
-        packages = ['pytmatrix','pytmatrix.test','pytmatrix.fortran_tm',
-            'pytmatrix.gaussqr'],        
+        packages = ['pytmatrix','pytmatrix.test','pytmatrix.fortran_tm'],        
         package_data = {
             'pytmatrix': ['ice_refr.dat'],
-            'pytmatrix.fortran_tm': ['ampld.par.f'],
-            'pytmatrix.gaussqr': 
-                ['source/util/linalg.hpp', 'source/util/precision.h']
+            'pytmatrix.fortran_tm': ['ampld.par.f']
         },
         platforms = ['any'],
         requires = ['numpy', 'scipy'])

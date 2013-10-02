@@ -20,6 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import numpy as np
+from scipy.integrate import dblquad
 
 
 def diff_xsect(tm, h_pol=True):
@@ -63,8 +64,29 @@ def ldr(tm, h_pol=True):
                (Z[0,0] + Z[0,1] + Z[1,0] + Z[1,1])
 
 
+def sca_xsect(tm, h_pol=True):
+    old_geom = tm.get_geometry()
+    rad_to_deg = 180.0/np.pi
+
+    def d_xsect(thet, phi):
+        (tm.phi, tm.thet) = (phi*rad_to_deg, thet*rad_to_deg)
+        #TODO: try S here
+        Z = tm.get_Z()
+        if h_pol:
+            diff = Z[0,0] - Z[0,1] - Z[1,0] + Z[1,1]
+        else:
+            diff = Z[0,0] + Z[0,1] + Z[1,0] + Z[1,1]
+        return diff * np.sin(thet)
+
+    xsect = 0.5*dblquad(d_xsect, 0.0, 2*np.pi, 
+        lambda x: 0.0, lambda x: np.pi)[0]
+
+    tm.set_geometry(old_geom)
+
+    return xsect
+
        
-def pol_ext_xsect(tm, h_pol=True):
+def ext_xsect(tm, h_pol=True):
     """Extinction cross section for the current setup, with polarization.    
 
     Args:
@@ -99,7 +121,7 @@ def ssa(tm, h_pol=True):
         The Single-scattering albedo.
     """
 
-    return sca_xsect(tm)/ext_xsect(tm)
+    return sca_xsect(tm, h_pol=h_pol)/ext_xsect(tm, h_pol=h_pol)
 
       
             

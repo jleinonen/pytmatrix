@@ -20,7 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import numpy as np
-from scatter import diff_xsect, ldr, pol_ext_xsect
+from scatter import diff_xsect, ldr, ext_xsect
 
 
 def radar_xsect(tm, h_pol=True):
@@ -134,6 +134,6 @@ def Ai(tm, h_pol=True):
     wavelength are given in [mm]. The tm object should be set to forward
     scattering geometry before calling this function.
     """
-    return 4.343e-3 * pol_ext_xsect(tm, h_pol=h_pol)
+    return 4.343e-3 * ext_xsect(tm, h_pol=h_pol)
 
 
