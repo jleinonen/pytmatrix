@@ -34,7 +34,13 @@ def radar_xsect(tm, h_pol=True):
     Returns:
         The radar cross section.
     """
-    return diff_xsect(tm, h_pol=h_pol)
+    Z = tm.get_Z()
+    if h_pol:
+        return 2 * np.pi * \
+            (Z[0,0] - Z[0,1] - Z[1,0] + Z[1,1])
+    else:
+        return 2 * np.pi * \
+            (Z[0,0] + Z[0,1] + Z[1,0] + Z[1,1])
 
 
 def refl(tm, h_pol=True):

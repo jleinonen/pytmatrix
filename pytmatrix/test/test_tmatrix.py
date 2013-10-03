@@ -223,6 +223,18 @@ class TMatrixTests(unittest.TestCase):
         self.assertLess(abs(S[1,0]), 1e-25)
 
 
+    def test_optical_theorem(self):
+        """Test that for a lossless particle, Csca=Cext
+        """
+        tm = TMatrix(axi=4.0, lam=6.5, m=complex(1.5,0.0), eps=1.0/0.6)
+        tm.set_geometry(tmatrix_aux.geom_horiz_forw)
+        ssa_h = scatter.ssa(tm, True)
+        ssa_v = scatter.ssa(tm, False)
+
+        self.assertLess(abs(1.0-ssa_h), 1e-6)
+        self.assertLess(abs(1.0-ssa_v), 1e-6)
+
+
 def test_relative(tests, x, x_ref, limit=epsilon):
     abs_diff = abs(x-x_ref)
     rel_diff = abs_diff/abs(x_ref)
