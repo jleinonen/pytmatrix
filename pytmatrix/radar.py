@@ -20,7 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import numpy as np
-from scatter import diff_xsect, ldr, ext_xsect
+from scatter import ldr, ext_xsect
 
 
 def radar_xsect(tm, h_pol=True):

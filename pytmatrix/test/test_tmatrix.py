@@ -28,6 +28,7 @@ from .. import radar
 from .. import refractive
 from .. import tmatrix_aux
 from .. import psd
+from .. import scatter
 
 
 #some allowance for rounding errors etc
