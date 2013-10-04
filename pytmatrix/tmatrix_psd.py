@@ -25,7 +25,7 @@ from psd import PSDIntegrator, GammaPSD, BinnedPSD
 import tmatrix_aux
 
 
-class TMatrixPSD(TMatrix):
+class TMatrixPSD(Scatterer):
     """T-matrix class to perform computations over PSDs.
 
     This class derives from tmatrix to perform computations on particle
@@ -69,30 +69,38 @@ class TMatrixPSD(TMatrix):
             default horizontal backscatter
     """
 
-    _attr_list = ["num_points", "m_func", "eps_func", "D_max", "geometries"]
+    _psd_attr_list = set(["num_points", "m_func", "axis_ratio_func", "D_max", 
+        "geometries"])
 
     _aliases = {"n_psd": "num_points",
-        "psd_eps_func": "eps_func",
+        "psd_eps_func": "axis_ratio_func",
         "psd_m_func": "m_func"
         }
 
-    def __init__(self, suppress_warning=False, **kwargs):
+
+    def __init__(self, **kwargs):
         super(TMatrixPSD, self).__init__(**kwargs)
 
-        if not suppress_warning:
-            warnings.warn("TMatrixPSD is deprecated. Use the " + \
-                "PSDIntegrator class and the psd_integrator property " + \
-                "of TMatrix instead.", DeprecationWarning)
+        if not kwargs.get("suppress_warning", False):
+            warnings.simplefilter("always")
+            warnings.warn("TMatrixPSD is deprecated and may be removed in " +
+                "a future version. Use the PSDIntegrator class and the " + \
+                "psd_integrator property of the Scatterer class instead.", 
+                DeprecationWarning)
+            warnings.filters.pop(0)
 
         self.num_points = 500
         self.m_func = None
-        self.eps_func = None
+        self.axis_ratio_func = None
         self.D_max = None
         self.geometries = (tmatrix_aux.geom_horiz_back,)
 
         self.psd_integrator = PSDIntegrator()        
 
-        for attr in self._attr_list:
+        for attr in self._aliases:
+            if attr in kwargs:
+                self.__dict__[self._aliases[attr]] = kwargs[attr]
+        for attr in self.__class__._psd_attr_list:
             if attr in kwargs:
                 self.__dict__[attr] = kwargs[attr]
 
@@ -101,29 +109,29 @@ class TMatrixPSD(TMatrix):
 
     def __setattr__(self, name, value):
         name = self._aliases.get(name, name)
-        object.__setattr__(self, name, value)
+        super(TMatrixPSD, self).__setattr__(name, value)
 
 
-    def __getattr(self, name):
+    def __getattr__(self, name):
         if name == "_aliases":
             raise AttributeError
         name = self._aliases.get(name, name)  
-        return object.__getattribute__(self, name)
+        return super(TMatrixPSD, self).__getattr__(name)
 
 
-    def copy_attrs(self):        
-        for attr in self._attr_list:
+    def _copy_attrs(self):        
+        for attr in self._psd_attr_list:
             if attr in self.__dict__:
                 self.psd_integrator.__dict__[attr] = self.__dict__[attr]
 
 
     def init_scatter_table(self):
-        self.copy_attrs()
+        self._copy_attrs()
         self.psd_integrator.init_scatter_table(self)
 
 
     def save_scatter_table(self, fn, description=""):
-        self.copy_attrs()
+        self._copy_attrs()
         self.psd_integrator.save_scatter_table(fn, description=description)
 
 

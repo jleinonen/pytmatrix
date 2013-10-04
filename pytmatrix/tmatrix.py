@@ -19,13 +19,14 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
+import warnings
 import numpy as np
 from fortran_tm import pytmatrix
 from quadrature import quadrature
 import orientation
 
 
-class TMatrix(object):
+class Scatterer(object):
     """T-Matrix scattering from nonspherical particles.
 
     Class for simulating scattering from nonspherical particles with the 
@@ -35,22 +36,21 @@ class TMatrix(object):
 
     First, the class should be be initialized. Any attributes (see below)
     can be passed as keyword arguments to the constructor. For example:
-    tm = tmatrix.TMatrix(lam=2.0, m=complex(0,2))
+    tm = tmatrix.TMatrix(wavelength=2.0, m=complex(0,2))
 
     The properties of the scattering and the radiation should then be set 
-    as attributes of this object. The naming of the attributes is identical to 
-    the Fortran code.
+    as attributes of this object. 
 
     The functions for computing the various scattering properties can then be 
     called. The TMatrix object will automatically recompute the T-matrix 
     and/or the amplitude and phase matrices when needed.
 
     Attributes: 
-        axi: Equivalent radius.
+        radius: Equivalent radius.
         rat: If rat==1 (default), axi is the equivalent volume radius.
-        lam: The wavelength of incident light (same units as axi).
+        wavelength: The wavelength of incident light (same units as axi).
         m: The complex refractive index.
-        eps: The horizontal-to-rotational axis ratio.
+        axis_ratio: The horizontal-to-rotational axis ratio.
         np: Particle shape. -1: spheroids; -2: cylinders; 
             n > 0: nth degree Chebyshev particles (not fully supported).
         alpha, beta: The Euler angles of the particle orientation (degrees).
@@ -68,12 +68,23 @@ class TMatrix(object):
         n_beta: Number of integration points in the beta Euler angle.
     """
 
+    _attr_list = set(["radius", "rat", "wavelength", "m", "axis_ratio", 
+        "np", "ddelt", "ndgs", "alpha", "beta", "thet0", "thet", 
+        "phi0", "phi", "Kw_sqr", "orient", "or_pdf", "n_alpha", "n_beta",
+        "psd_integrator", "psd"])
+
+    _deprecated_aliases = {"axi": "radius",
+        "lam": "wavelength",
+        "eps": "axis_ratio",
+        }
+
+
     def __init__(self, **kwargs):
-        self.axi = 1.0
+        self.radius = 1.0
         self.rat = 1.0
-        self.lam = 1.0
+        self.wavelength = 1.0
         self.m = complex(2,0)
-        self.eps = 1.000001
+        self.axis_ratio = 1.0
         self.np = -1
         self.ddelt = 1e-3
         self.ndgs = 2
@@ -97,12 +108,16 @@ class TMatrix(object):
         self.psd_integrator = None
         self.psd = None    
 
-        attrs = ("axi", "rat", "lam", "m", "eps", "np", "ddelt", "ndgs", 
-            "alpha", "beta", "thet0", "thet", "phi0", "phi", "Kw_sqr",
-            "orient", "or_pdf", "n_alpha", "n_beta")
-        for k in kwargs:
-            if k in attrs:
-                self.__dict__[k] = kwargs[k]
+        self.suppress_warning = kwargs["suppress_warning"] if \
+            "suppress_warning" in kwargs else False
+
+        for attr in self.__class__._deprecated_aliases:            
+            if attr in kwargs:
+                self._warn_deprecation(attr)
+                self.__dict__[self._deprecated_aliases[attr]] = kwargs[attr]
+        for attr in self._attr_list:
+            if attr in kwargs:
+                self.__dict__[attr] = kwargs[attr]
 
 
     def set_geometry(self, geom):
@@ -127,22 +142,51 @@ class TMatrix(object):
         """
         return (self.thet0, self.thet, self.phi0, self.phi, self.alpha, 
             self.beta)
-        
+
+
+    def _warn_deprecation(self, attr):
+        if not self.suppress_warning:
+            replacement = self._deprecated_aliases[attr]           
+            warnings.simplefilter("always")
+            warnings.warn(("The attribute '{attr}' is deprecated and may " + \
+                "be removed in a future version. It has been renamed to " + \
+                "'{replacement}'.").format(attr=attr, 
+                replacement=replacement), DeprecationWarning)
+            warnings.filters.pop(0)
+
+
+    def __getattr__(self, name):
+        if name == "_aliases":
+            raise AttributeError
+        if name in self._deprecated_aliases:
+            self._warn_deprecation(name)
+        name = self._deprecated_aliases.get(name, name)  
+        return object.__getattribute__(self, name)
+
+
+    def __setattr__(self, name, value):
+        if name in self._deprecated_aliases:
+            self._warn_deprecation(name)
+        name = self._deprecated_aliases.get(name, name)
+        object.__setattr__(self, name, value)  
+
 
     def _init_tmatrix(self):
         """Initialize the T-matrix.
         """
-        self.nmax = pytmatrix.calctmat(self.axi, self.rat, self.lam, self.m.real, 
-            self.m.imag, self.eps, self.np, self.ddelt, self.ndgs)
-        self._tm_signature = (self.axi, self.rat, self.lam, self.m,
-            self.eps, self.np, self.ddelt, self.ndgs)        
+        self.nmax = pytmatrix.calctmat(self.radius, self.rat, self.wavelength,
+            self.m.real, self.m.imag, self.axis_ratio, self.np, self.ddelt, 
+            self.ndgs)
+        self._tm_signature = (self.radius, self.rat, self.wavelength, self.m,
+            self.axis_ratio, self.np, self.ddelt, self.ndgs)        
 
 
     def _init_orient(self):
-        """Retrieve the quadrature points and weights.
+        """Retrieve the quadrature points and weights if needed.
         """
-        (self.beta_p, self.beta_w) = quadrature.get_points_and_weights(
-            self.or_pdf, 0, 180, self.n_beta)
+        if self.orient == orientation.orient_averaged_fixed:
+            (self.beta_p, self.beta_w) = quadrature.get_points_and_weights(
+                self.or_pdf, 0, 180, self.n_beta)
         self._set_orient_signature()
 
 
@@ -150,11 +194,12 @@ class TMatrix(object):
         """Mark the amplitude and scattering matrices as up to date.
         """
         self._scatter_signature = (self.thet0, self.thet, self.phi0, self.phi,
-                                self.alpha, self.beta, self.orient)
+            self.alpha, self.beta, self.orient)
 
 
     def _set_orient_signature(self):
-        self._orient_signature = (self.or_pdf, self.n_alpha, self.n_beta)   
+        self._orient_signature = (self.orient, self.or_pdf, self.n_alpha, 
+            self.n_beta)   
     
 
     def _set_psd_signature(self):
@@ -169,8 +214,9 @@ class TMatrix(object):
         if beta == None:
             beta = self.beta
 
-        tm_outdated = self._tm_signature != (self.axi, self.rat, self.lam, 
-            self.m, self.eps, self.np, self.ddelt, self.ndgs)
+        tm_outdated = self._tm_signature != (self.radius, self.rat, 
+            self.wavelength, self.m, self.axis_ratio, self.np, self.ddelt, 
+            self.ndgs)
         if tm_outdated:
             self._init_tmatrix()
 
@@ -181,8 +227,8 @@ class TMatrix(object):
 
         if outdated:
             (self._S_single, self._Z_single) = pytmatrix.calcampl(self.nmax, 
-                self.lam, self.thet0, self.thet, self.phi0, self.phi, alpha, 
-                beta)
+                self.wavelength, self.thet0, self.thet, self.phi0, self.phi, 
+                alpha, beta)
             self._set_scatter_signature()
 
         return (self._S_single, self._Z_single)
@@ -192,13 +238,14 @@ class TMatrix(object):
         """Get the S and Z matrices using the specified orientation averaging.
         """
 
-        tm_outdated = self._tm_signature != (self.axi, self.rat, self.lam, 
-            self.m, self.eps, self.np, self.ddelt, self.ndgs)
+        tm_outdated = self._tm_signature != (self.radius, self.rat, 
+            self.wavelength, self.m, self.axis_ratio, self.np, self.ddelt, 
+            self.ndgs)
         scatter_outdated = self._scatter_signature != (self.thet0, self.thet, 
             self.phi0, self.phi, self.alpha, self.beta, self.orient)
 
         orient_outdated = self._orient_signature != \
-            (self.or_pdf, self.n_alpha, self.n_beta)
+            (self.orient, self.or_pdf, self.n_alpha, self.n_beta)
         if orient_outdated:
             self._init_orient()
         
@@ -217,8 +264,9 @@ class TMatrix(object):
         if self.psd_integrator is None:
             (self._S, self._Z) = self.get_SZ_orient()
         else:
-            scatter_outdated = self._scatter_signature != (self.thet0, self.thet, 
-                self.phi0, self.phi, self.alpha, self.beta, self.orient)            
+            scatter_outdated = self._scatter_signature != (self.thet0, 
+                self.thet, self.phi0, self.phi, self.alpha, self.beta, 
+                self.orient)            
             psd_outdated = self._psd_signature != (self.psd,)
             outdated = scatter_outdated or psd_outdated
 
@@ -242,3 +290,14 @@ class TMatrix(object):
     def get_Csca(self):
         get_geometry()
 
+
+# Alias with a warning
+class TMatrix(Scatterer):
+    def __init__(self, **kwargs):
+        if not kwargs.get("suppress_warning", False):
+            warnings.simplefilter("always")
+            warnings.warn("'TMatrix' is deprecated and may be removed in " +
+                "a future version. It has been renamed to 'Scatterer'.", 
+                DeprecationWarning)
+            warnings.filters.pop(0)
+        super(TMatrix, self).__init__(**kwargs)

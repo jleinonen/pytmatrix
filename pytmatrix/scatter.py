@@ -99,9 +99,9 @@ def ext_xsect(tm, h_pol=True):
 
     S = tm.get_S()
     if h_pol:
-        return 2 * tm.lam * S[1,1].imag
+        return 2 * tm.wavelength * S[1,1].imag
     else:
-        return 2 * tm.lam * S[0,0].imag
+        return 2 * tm.wavelength * S[0,0].imag
 
 
 def ssa(tm, h_pol=True):

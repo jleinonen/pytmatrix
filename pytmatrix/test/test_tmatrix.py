@@ -38,7 +38,7 @@ epsilon = 1e-7
 def run_tests():
     """Tests for the T-matrix code.
 
-       Runs several tests that test the Mie code. All tests should return ok.
+       Runs several tests that test the code. All tests should return ok.
        If they don't, please contact the author.
     """
     suite = unittest.TestLoader().loadTestsFromTestCase(TMatrixTests)
@@ -50,7 +50,8 @@ class TMatrixTests(unittest.TestCase):
     def test_single(self):
         """Test a single-orientation case
         """
-        tm = TMatrix(axi=2.0, lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
+        tm = TMatrix(axi=2.0, lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6,
+            suppress_warning=True)
         (S, Z) = tm.get_SZ()
 
         S_ref = np.array(
@@ -76,7 +77,8 @@ class TMatrixTests(unittest.TestCase):
     def test_adaptive_orient(self):
         """Test an adaptive orientation averaging case
         """
-        tm = TMatrix(axi=2.0, lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
+        tm = TMatrix(axi=2.0, lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6,
+            suppress_warning=True)
         tm.or_pdf = orientation.gaussian_pdf(20.0)
         tm.orient = orientation.orient_averaged_adaptive
         (S, Z) = tm.get_SZ()
@@ -104,7 +106,8 @@ class TMatrixTests(unittest.TestCase):
     def test_fixed_orient(self):
         """Test a fixed-point orientation averaging case
         """
-        tm = TMatrix(axi=2.0, lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
+        tm = TMatrix(axi=2.0, lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6,
+            suppress_warning=True)
         tm.or_pdf = orientation.gaussian_pdf(20.0)
         tm.orient = orientation.orient_averaged_fixed
         (S, Z) = tm.get_SZ()
@@ -132,8 +135,8 @@ class TMatrixTests(unittest.TestCase):
     def test_psd(self):
         """Test a case that integrates over a particle size distribution
         """
-        #tm = TMatrixPSD(lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
-        tm = TMatrix(lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6)
+        tm = TMatrix(lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6,
+            suppress_warning=True)
         tm.psd_integrator = psd.PSDIntegrator()
         tm.psd = psd.GammaPSD(D0=1.0, Nw=1e3, mu=4)
         tm.psd_integrator.D_max = 10.0
@@ -163,8 +166,8 @@ class TMatrixTests(unittest.TestCase):
     def test_radar(self):
         """Test that the radar properties are computed correctly
         """
-        tm = TMatrixPSD(suppress_warning=True, lam=tmatrix_aux.wl_C, 
-            m=refractive.m_w_10C[tmatrix_aux.wl_C])
+        tm = TMatrixPSD(lam=tmatrix_aux.wl_C, 
+            m=refractive.m_w_10C[tmatrix_aux.wl_C], suppress_warning=True)
         tm.psd = psd.GammaPSD(D0=2.0, Nw=1e3, mu=4)        
         tm.psd_eps_func = lambda D: 1.0/drop_ar(D)
         tm.D_max = 10.0
@@ -212,7 +215,7 @@ class TMatrixTests(unittest.TestCase):
         r = 1.0
         eps = 1.0
         m = complex(1.5,0.5)
-        tm = TMatrix(lam=wl, axi=r, eps=eps, m=m)
+        tm = TMatrix(lam=wl, axi=r, eps=eps, m=m, suppress_warning=True)
         S = tm.get_S()
 
         k = 2*np.pi/wl
@@ -225,15 +228,35 @@ class TMatrixTests(unittest.TestCase):
 
 
     def test_optical_theorem(self):
-        """Test that for a lossless particle, Csca=Cext
+        """Optical theorem: test that for a lossless particle, Csca=Cext
         """
-        tm = TMatrix(axi=4.0, lam=6.5, m=complex(1.5,0.0), eps=1.0/0.6)
+        tm = TMatrix(radius=4.0, wavelength=6.5, m=complex(1.5,0.0), 
+            axis_ratio=1.0/0.6, suppress_warning=True)
         tm.set_geometry(tmatrix_aux.geom_horiz_forw)
         ssa_h = scatter.ssa(tm, True)
         ssa_v = scatter.ssa(tm, False)
 
         self.assertLess(abs(1.0-ssa_h), 1e-6)
         self.assertLess(abs(1.0-ssa_v), 1e-6)
+
+
+    def test_asymmetry(self):
+        """Test calculation of the asymmetry parameter
+        """
+        tm = TMatrix(radius=4.0, wavelength=6.5, m=complex(1.5,0.5), 
+            axis_ratio=1.0, suppress_warning=True)
+        tm.set_geometry(tmatrix_aux.geom_horiz_forw)
+        asym_horiz = scatter.asym(tm)
+        tm.set_geometry(tmatrix_aux.geom_vert_forw)
+        asym_vert = scatter.asym(tm)
+        # Is the asymmetry parameter the same for a sphere in two directions?
+        self.assertLess(abs(1-asym_horiz/asym_vert), 1e-6)
+
+        # Is the asymmetry parameter zero for small particles?
+        tm.radius = 0.0004
+        tm.set_geometry(tmatrix_aux.geom_horiz_forw)
+        asym_horiz = scatter.asym(tm)
+        self.assertLess(asym_horiz, 1e-8)
 
 
 def test_relative(tests, x, x_ref, limit=epsilon):
@@ -249,7 +272,6 @@ def test_relative(tests, x, x_ref, limit=epsilon):
                     rel_diff[i,j] < epsilon)            
     except AttributeError:
         tests.assertLess(rel_diff, limit)
-
 
 
 # For testing variable aspect ratio

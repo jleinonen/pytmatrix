@@ -57,7 +57,7 @@ def refl(tm, h_pol=True):
     NOTE: To compute reflectivity in dBZ, give the particle diameter and
     wavelength in [mm], then take 10*log10(Zi).
     """
-    return tm.lam**4/(np.pi**5*tm.Kw_sqr) * radar_xsect(tm, h_pol)
+    return tm.wavelength**4/(np.pi**5*tm.Kw_sqr) * radar_xsect(tm, h_pol)
 
 #alias for compatibility
 Zi = refl
@@ -71,7 +71,7 @@ def Zdr(tm):
         tm: a TMatrix instance.
 
     Returns:
-       The Z_dr.
+        The Z_dr.
     """
     return radar_xsect(tm, True)/radar_xsect(tm, False)
 
@@ -84,7 +84,7 @@ def delta_hv(tm):
         tm: a TMatrix instance.
 
     Returns:
-       Delta_hv [rad].
+        Delta_hv [rad].
     """
     Z = tm.get_Z()
     return np.arctan2(Z[2,3] - Z[3,2], -Z[2,2] - Z[3,3])
@@ -115,14 +115,14 @@ def Kdp(tm):
         tm: a TMatrix instance.
 
     Returns:
-       K_dp [deg/km].
+        K_dp [deg/km].
 
     NOTE: This only returns the correct value if the particle diameter and
     wavelength are given in [mm]. The tm object should be set to forward
     scattering geometry before calling this function.
     """
     S = tm.get_S()
-    return 1e-3 * (180.0/np.pi) * tm.lam * (S[1,1]-S[0,0]).real
+    return 1e-3 * (180.0/np.pi) * tm.wavelength * (S[1,1]-S[0,0]).real
 
 
 def Ai(tm, h_pol=True):
@@ -130,11 +130,11 @@ def Ai(tm, h_pol=True):
     Specific attenuation (A) for the current setup.
 
     Parameters:
-       h_pol (default True): compute attenuation for the horizontal polarization.
-          If False, use vertical polarization.
+        h_pol (default True): compute attenuation for the horizontal 
+        polarization. If False, use vertical polarization.
 
     Returns:
-       A [dB/km].
+        A [dB/km].
 
     NOTE: This only returns the correct value if the particle diameter and
     wavelength are given in [mm]. The tm object should be set to forward

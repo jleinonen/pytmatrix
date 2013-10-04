@@ -134,16 +134,18 @@ class BinnedPSD(object):
 
 class PSDIntegrator(object):
 
+    attrs = set(["num_points", "m_func", "axis_ratio_func", "D_max", 
+        "geometries"])
+
     def __init__(self, **kwargs):      
         self.num_points = 500
         self.m_func = None
-        self.eps_func = None
+        self.axis_ratio_func = None
         self.D_max = None
         self.geometries = (tmatrix_aux.geom_horiz_back,)
 
-        attrs = ("num_points", "m_func", "eps_func", "D_max", "geometries")
         for k in kwargs:
-            if k in attrs:
+            if k in self.__class__.attrs:
                 self.__dict__[k] = kwargs[k]
 
         self._S_table = None
@@ -187,20 +189,20 @@ class PSDIntegrator(object):
         
         Initialize the scattering lookup tables for the different geometries.
         Before calling this, the following attributes must be set:
-           num_points, m_func, eps_func, D_max, geometries
+           num_points, m_func, axis_ratio_func, D_max, geometries
         and additionally, all the desired attributes of the TMatrix class
         (e.g. wavelength, aspect ratio).
         """
-        self._psd_D = \
-            np.linspace(self.D_max/self.num_points, self.D_max, self.num_points)
+        self._psd_D = np.linspace(self.D_max/self.num_points, self.D_max, 
+            self.num_points)
 
         self._S_table = {}
         self._Z_table = {}
         self._previous_psd = None
         self._m_table = np.ndarray(self.num_points, dtype=complex)
         
-        (old_m, old_eps, old_axi, old_geom) = \
-            (tm.m, tm.eps, tm.axi, tm.get_geometry())
+        (old_m, old_axis_ratio, old_radius, old_geom) = \
+            (tm.m, tm.axis_ratio, tm.radius, tm.get_geometry())
 
         for geom in self.geometries:
             self._S_table[geom] = \
@@ -210,10 +212,10 @@ class PSDIntegrator(object):
         for (i,D) in enumerate(self._psd_D):
             if self.m_func != None:
                 tm.m = self.m_func(D)
-            if self.eps_func != None:
-                tm.eps = self.eps_func(D)
+            if self.axis_ratio_func != None:
+                tm.axis_ratio = self.axis_ratio_func(D)
             self._m_table[i] = tm.m
-            tm.axi = D/2.0
+            tm.radius = D/2.0
             for geom in self.geometries:
                 tm.set_geometry(geom)
                 (S, Z) = tm.get_SZ_orient()
@@ -221,7 +223,7 @@ class PSDIntegrator(object):
                 self._Z_table[geom][:,:,i] = Z
 
         #restore old values
-        (tm.m, tm.eps, tm.axi) = (old_m, old_eps, old_axi) 
+        (tm.m, tm.axis_ratio, tm.radius) = (old_m, old_axis_ratio, old_radius) 
         tm.set_geometry(old_geom)
 
 
@@ -242,8 +244,8 @@ class PSDIntegrator(object):
         data = {
            "description": description,
            "time": datetime.now(),
-           "psd_scatter": (self.num_points, self.D_max, self._psd_D, self._S_table,
-                self.Z_table, self._m_table, self.geometries),
+           "psd_scatter": (self.num_points, self.D_max, self._psd_D, 
+                self._S_table, self.Z_table, self._m_table, self.geometries),
            "version": tmatrix_aux.VERSION
            }
         pickle.dump(data, file(fn, 'w'), pickle.HIGHEST_PROTOCOL)
@@ -259,10 +261,11 @@ class PSDIntegrator(object):
         """
         data = pickle.load(file(fn))
 
-        if ("version" not in data) or (data["version"] != tmatrix_aux.VERSION):
+        if ("version" not in data) or (data["version"]!=tmatrix_aux.VERSION):
             warnings.warn("Loading data saved with another version.", Warning)
 
         (self.num_points, self.D_max, self._psd_D, self._S_table, 
-            self._Z_table, self._m_table, self.geometries) = data["psd_scatter"]
+            self._Z_table, self._m_table, 
+            self.geometries) = data["psd_scatter"]
         return (data["time"], data["description"])
 
