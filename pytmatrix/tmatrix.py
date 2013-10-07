@@ -66,6 +66,13 @@ class Scatterer(object):
         or_pdf: Particle orientation PDF for orientational averaging.
         n_alpha: Number of integration points in the alpha Euler angle.
         n_beta: Number of integration points in the beta Euler angle.
+        psd_integrator: Set this to a PSDIntegrator instance to enable size
+            distribution integration. If this is None (default), size 
+            distribution integration is not used. See the PSDIntegrator
+            documentation for more information.
+        psd: set to a callable object giving the PSD value for a given 
+            diameter (for example a GammaPSD instance); default None. Has no
+            effect if psd_integrator is also None.
     """
 
     _attr_list = set(["radius", "rat", "wavelength", "m", "axis_ratio", 

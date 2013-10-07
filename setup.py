@@ -31,14 +31,14 @@ Requires NumPy and SciPy.
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('pytmatrix', parent_package, top_path,
-        version = '0.1.3',
+        version = '0.2.0',
         author  = "Jussi Leinonen",
         author_email = "jsleinonen@gmail.com",
         description = "T-matrix scattering computations",
         license = "MIT",
         url = 'http://code.google.com/p/pytmatrix/',
         download_url = \
-            'http://pytmatrix.googlecode.com/files/pytmatrix-0.1.3.zip',
+            'http://pytmatrix.googlecode.com/files/pytmatrix-0.2.0.zip',
         long_description = long_description,
         classifiers = [
             "Development Status :: 4 - Beta",

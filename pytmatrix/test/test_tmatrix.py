@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import unittest
 import numpy as np
-from ..tmatrix import TMatrix
+from ..tmatrix import TMatrix, Scatterer
 from ..tmatrix_psd import TMatrixPSD
 from .. import orientation
 from .. import radar
@@ -135,9 +135,9 @@ class TMatrixTests(unittest.TestCase):
     def test_psd(self):
         """Test a case that integrates over a particle size distribution
         """
-        tm = TMatrix(lam=6.5, m=complex(1.5,0.5), eps=1.0/0.6,
-            suppress_warning=True)
+        tm = Scatterer(wavelength=6.5, m=complex(1.5,0.5), axis_ratio=1.0/0.6)
         tm.psd_integrator = psd.PSDIntegrator()
+        tm.psd_integrator.num_points = 500
         tm.psd = psd.GammaPSD(D0=1.0, Nw=1e3, mu=4)
         tm.psd_integrator.D_max = 10.0
         tm.psd_integrator.init_scatter_table(tm)
@@ -215,7 +215,7 @@ class TMatrixTests(unittest.TestCase):
         r = 1.0
         eps = 1.0
         m = complex(1.5,0.5)
-        tm = TMatrix(lam=wl, axi=r, eps=eps, m=m, suppress_warning=True)
+        tm = Scatterer(wavelength=wl, radius=r, axis_ratio=eps, m=m)
         S = tm.get_S()
 
         k = 2*np.pi/wl
@@ -230,8 +230,8 @@ class TMatrixTests(unittest.TestCase):
     def test_optical_theorem(self):
         """Optical theorem: test that for a lossless particle, Csca=Cext
         """
-        tm = TMatrix(radius=4.0, wavelength=6.5, m=complex(1.5,0.0), 
-            axis_ratio=1.0/0.6, suppress_warning=True)
+        tm = Scatterer(radius=4.0, wavelength=6.5, m=complex(1.5,0.0), 
+            axis_ratio=1.0/0.6)
         tm.set_geometry(tmatrix_aux.geom_horiz_forw)
         ssa_h = scatter.ssa(tm, True)
         ssa_v = scatter.ssa(tm, False)
@@ -243,8 +243,8 @@ class TMatrixTests(unittest.TestCase):
     def test_asymmetry(self):
         """Test calculation of the asymmetry parameter
         """
-        tm = TMatrix(radius=4.0, wavelength=6.5, m=complex(1.5,0.5), 
-            axis_ratio=1.0, suppress_warning=True)
+        tm = Scatterer(radius=4.0, wavelength=6.5, m=complex(1.5,0.5), 
+            axis_ratio=1.0)
         tm.set_geometry(tmatrix_aux.geom_horiz_forw)
         asym_horiz = scatter.asym(tm)
         tm.set_geometry(tmatrix_aux.geom_vert_forw)

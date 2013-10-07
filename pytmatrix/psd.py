@@ -133,12 +133,46 @@ class BinnedPSD(object):
 
 
 class PSDIntegrator(object):
+    """A class used to perform computations over PSDs.
+
+    This class can be used to integrate scattering properties over particle
+    size distributions.
+
+    Initialize an instance of the class and set the attributes as described
+    below. Call init_scatter_table to compute the lookup table for scattering
+    values at different scatterer geometries. Set the class instance as the
+    psd_integrator attribute of a Scatterer object to enable PSD averaging for
+    that object.
+
+    After a call to init_scatter_table, the scattering properties can be
+    retrieved multiple times without re-initializing. However, the geometry of
+    the Scatterer instance must be set to one of those specified in the
+    "geometries" attribute.
+
+    Attributes:
+        
+        num_points: the number of points for which to sample the PSD and 
+            scattering properties for; default num_points=1024 should be good
+            for most purposes
+        m_func: set to a callable object giving the refractive index as a
+            function of diameter, or None to use the "m" attribute of the
+            Scatterer for all sizes; default None
+        axis_ratio_func: set to a callable object giving the aspect ratio
+            (horizontal to rotational) as a function of diameter, or None to 
+            use the "axis_ratio" attribute for all sizes; default None
+        D_max: set to the maximum single scatterer size that is desired to be
+            used (usually the D_max corresponding to the largest PSD you 
+            intend to use)
+        geometries: tuple containing the scattering geometry tuples that are 
+            initialized (thet0, thet, phi0, phi, alpha, beta); 
+            default horizontal backscatter
+    """
 
     attrs = set(["num_points", "m_func", "axis_ratio_func", "D_max", 
         "geometries"])
 
     def __init__(self, **kwargs):      
-        self.num_points = 500
+        self.num_points = 1024
         self.m_func = None
         self.axis_ratio_func = None
         self.D_max = None

@@ -20,7 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import warnings
-from tmatrix import TMatrix
+from tmatrix import Scatterer
 from psd import PSDIntegrator, GammaPSD, BinnedPSD
 import tmatrix_aux
 
@@ -28,7 +28,7 @@ import tmatrix_aux
 class TMatrixPSD(Scatterer):
     """T-matrix class to perform computations over PSDs.
 
-    This class derives from tmatrix to perform computations on particle
+    This class derives from TMatrix to perform computations on particle
     ensembles given by a particle size distribution (PSD).
 
     Most class attributes can be set as in the TMatrix class, and there
