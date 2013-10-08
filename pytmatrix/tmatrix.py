@@ -70,9 +70,9 @@ class Scatterer(object):
             distribution integration. If this is None (default), size 
             distribution integration is not used. See the PSDIntegrator
             documentation for more information.
-        psd: set to a callable object giving the PSD value for a given 
+        psd: Set to a callable object giving the PSD value for a given 
             diameter (for example a GammaPSD instance); default None. Has no
-            effect if psd_integrator is also None.
+            effect if psd_integrator is None.
     """
 
     _attr_list = set(["radius", "rat", "wavelength", "m", "axis_ratio", 
@@ -292,10 +292,6 @@ class Scatterer(object):
 
     def get_Z(self):
         return self.get_SZ()[1]
-
-
-    def get_Csca(self):
-        get_geometry()
 
 
 # Alias with a warning

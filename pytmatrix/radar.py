@@ -23,18 +23,18 @@ import numpy as np
 from scatter import ldr, ext_xsect
 
 
-def radar_xsect(tm, h_pol=True):
+def radar_xsect(scatterer, h_pol=True):
     """Radar cross section for the current setup.    
 
     Args:
-        tm: a TMatrix instance.
+        scatterer: a Scatterer instance.
         h_pol: If true (default), use horizontal polarization.
         If false, use vertical polarization.
 
     Returns:
         The radar cross section.
     """
-    Z = tm.get_Z()
+    Z = scatterer.get_Z()
     if h_pol:
         return 2 * np.pi * \
             (Z[0,0] - Z[0,1] - Z[1,0] + Z[1,1])
@@ -43,11 +43,11 @@ def radar_xsect(tm, h_pol=True):
             (Z[0,0] + Z[0,1] + Z[1,0] + Z[1,1])
 
 
-def refl(tm, h_pol=True):
+def refl(scatterer, h_pol=True):
     """Reflectivity (with number concentration N=1) for the current setup.
 
     Args:
-        tm: a TMatrix instance.
+        scatterer: a Scatterer instance.
         h_pol: If true (default), use horizontal polarization.
         If false, use vertical polarization.
 
@@ -57,75 +57,82 @@ def refl(tm, h_pol=True):
     NOTE: To compute reflectivity in dBZ, give the particle diameter and
     wavelength in [mm], then take 10*log10(Zi).
     """
-    return tm.wavelength**4/(np.pi**5*tm.Kw_sqr) * radar_xsect(tm, h_pol)
+    return scatterer.wavelength**4/(np.pi**5*scatterer.Kw_sqr) * \
+        radar_xsect(scatterer, h_pol)
 
 #alias for compatibility
 Zi = refl
 
 
-def Zdr(tm):
+def Zdr(scatterer):
     """
     Differential reflectivity (Z_dr) for the current setup.
 
     Args:
-        tm: a TMatrix instance.
+        scatterer: a Scatterer instance.
 
     Returns:
         The Z_dr.
     """
-    return radar_xsect(tm, True)/radar_xsect(tm, False)
+    return radar_xsect(scatterer, True)/radar_xsect(scatterer, False)
 
 
-def delta_hv(tm):
+def delta_hv(scatterer):
     """
     Delta_hv for the current setup.
 
     Args:
-        tm: a TMatrix instance.
+        scatterer: a Scatterer instance.
 
     Returns:
         Delta_hv [rad].
     """
-    Z = tm.get_Z()
+    Z = scatterer.get_Z()
     return np.arctan2(Z[2,3] - Z[3,2], -Z[2,2] - Z[3,3])
 
 
-def rho_hv(tm):
+def rho_hv(scatterer):
     """
     Copolarized correlation (rho_hv) for the current setup.
 
     Args:
-        tm: a TMatrix instance.
+        scatterer: a Scatterer instance.
 
     Returns:
        rho_hv.
     """
-    Z = tm.get_Z()
+    Z = scatterer.get_Z()
     a = (Z[2,2] + Z[3,3])**2 + (Z[3,2] - Z[2,3])**2
     b = (Z[0,0] - Z[0,1] - Z[1,0] + Z[1,1])
     c = (Z[0,0] + Z[0,1] + Z[1,0] + Z[1,1])
     return np.sqrt(a / (b*c))
 
 
-def Kdp(tm):
+def Kdp(scatterer):
     """
     Specific differential phase (K_dp) for the current setup.
 
     Args:
-        tm: a TMatrix instance.
+        scatterer: a Scatterer instance.
 
     Returns:
         K_dp [deg/km].
 
     NOTE: This only returns the correct value if the particle diameter and
-    wavelength are given in [mm]. The tm object should be set to forward
-    scattering geometry before calling this function.
+    wavelength are given in [mm]. The scatterer object should be set to 
+    forward scattering geometry before calling this function.
     """
-    S = tm.get_S()
-    return 1e-3 * (180.0/np.pi) * tm.wavelength * (S[1,1]-S[0,0]).real
+    if (scatterer.thet0 != scatterer.thet) or \
+        (scatterer.phi0 != scatterer.phi):
+        
+        raise ValueError("A forward scattering geometry is needed to " + \
+            "compute the specific differential phase.")
+
+    S = scatterer.get_S()
+    return 1e-3 * (180.0/np.pi) * scatterer.wavelength * (S[1,1]-S[0,0]).real
 
 
-def Ai(tm, h_pol=True):
+def Ai(scatterer, h_pol=True):
     """
     Specific attenuation (A) for the current setup.
 
@@ -137,9 +144,9 @@ def Ai(tm, h_pol=True):
         A [dB/km].
 
     NOTE: This only returns the correct value if the particle diameter and
-    wavelength are given in [mm]. The tm object should be set to forward
-    scattering geometry before calling this function.
+    wavelength are given in [mm]. The scatterer object should be set to 
+    forward scattering geometry before calling this function.
     """
-    return 4.343e-3 * ext_xsect(tm, h_pol=h_pol)
+    return 4.343e-3 * ext_xsect(scatterer, h_pol=h_pol)
 
 
