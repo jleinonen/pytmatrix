@@ -4,6 +4,7 @@ setup.py
 pytmatrix/__init__.py
 pytmatrix/ice_refr.dat
 pytmatrix/orientation.py
+pytmatrix/psd.py
 pytmatrix/radar.py
 pytmatrix/refractive.py
 pytmatrix/scatter.py
@@ -15,16 +16,7 @@ pytmatrix/fortran_tm/ampld.lp.f
 pytmatrix/fortran_tm/ampld.par.f
 pytmatrix/fortran_tm/lpd.f
 pytmatrix/fortran_tm/pytmatrix.pyf
-pytmatrix/gaussqr/__init__.py
-pytmatrix/gaussqr/wrapper.c
-pytmatrix/gaussqr/source/fejer2.cpp
-pytmatrix/gaussqr/source/gaussqr.cpp
-pytmatrix/gaussqr/source/gaussqr.h
-pytmatrix/gaussqr/source/lanczos.cpp
-pytmatrix/gaussqr/source/mtqli.cpp
-pytmatrix/gaussqr/source/fft/fftpack.cpp
-pytmatrix/gaussqr/source/fft/fftpack.h
-pytmatrix/gaussqr/source/util/linalg.hpp
-pytmatrix/gaussqr/source/util/precision.h
+pytmatrix/quadrature/__init__.py
+pytmatrix/quadrature/quadrature.py
 pytmatrix/test/__init__.py
 pytmatrix/test/test_tmatrix.py

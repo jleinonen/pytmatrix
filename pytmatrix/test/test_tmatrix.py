@@ -223,8 +223,8 @@ class TMatrixTests(unittest.TestCase):
         
         test_relative(self, S[0,0], S_ray, limit=1e-3)
         test_relative(self, S[1,1], -S_ray, limit=1e-3)        
-        self.assertLess(abs(S[0,1]), 1e-25)
-        self.assertLess(abs(S[1,0]), 1e-25)
+        test_less(self, abs(S[0,1]), 1e-25)
+        test_less(self, abs(S[1,0]), 1e-25)
 
 
     def test_optical_theorem(self):
@@ -236,8 +236,8 @@ class TMatrixTests(unittest.TestCase):
         ssa_h = scatter.ssa(tm, True)
         ssa_v = scatter.ssa(tm, False)
 
-        self.assertLess(abs(1.0-ssa_h), 1e-6)
-        self.assertLess(abs(1.0-ssa_v), 1e-6)
+        test_less(self, abs(1.0-ssa_h), 1e-6)
+        test_less(self, abs(1.0-ssa_v), 1e-6)
 
 
     def test_asymmetry(self):
@@ -250,13 +250,13 @@ class TMatrixTests(unittest.TestCase):
         tm.set_geometry(tmatrix_aux.geom_vert_forw)
         asym_vert = scatter.asym(tm)
         # Is the asymmetry parameter the same for a sphere in two directions?
-        self.assertLess(abs(1-asym_horiz/asym_vert), 1e-6)
+        test_less(self, abs(1-asym_horiz/asym_vert), 1e-6)
 
         # Is the asymmetry parameter zero for small particles?
         tm.radius = 0.0004
         tm.set_geometry(tmatrix_aux.geom_horiz_forw)
         asym_horiz = scatter.asym(tm)
-        self.assertLess(asym_horiz, 1e-8)
+        test_less(self, abs(asym_horiz), 1e-8)
 
 
 def test_relative(tests, x, x_ref, limit=epsilon):
@@ -271,7 +271,14 @@ def test_relative(tests, x, x_ref, limit=epsilon):
                 tests.assertTrue(abs_diff[i,j] < 1e-15 or \
                     rel_diff[i,j] < epsilon)            
     except AttributeError:
-        tests.assertLess(rel_diff, limit)
+        test_less(tests, rel_diff, limit)
+
+
+def test_less(tests, value, limit):
+    try:
+        tests.assertLess(value, limit)
+    except AttributeError: # in Python 2.6 which has no assertLess
+        tests.assertTrue(value < limit)
 
 
 # For testing variable aspect ratio
