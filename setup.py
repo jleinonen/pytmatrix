@@ -38,7 +38,7 @@ def configuration(parent_package='',top_path=None):
         license = "MIT",
         url = 'http://code.google.com/p/pytmatrix/',
         download_url = \
-            'http://pytmatrix.googlecode.com/files/pytmatrix-0.2.0.zip',
+            'https://github.com/jleinonen/pytmatrix/releases/download/0.2.0/pytmatrix-0.2.0.zip',
         long_description = long_description,
         classifiers = [
             "Development Status :: 4 - Beta",
