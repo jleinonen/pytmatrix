@@ -1,4 +1,4 @@
-pytmatrix
+PyTMatrix
 =========
 
 A Python code for computing the scattering properties of homogeneous nonspherical scatterers with the _T_-Matrix method.
