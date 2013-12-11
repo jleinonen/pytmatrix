@@ -118,7 +118,7 @@ class BinnedPSD(object):
             else:
                 start = half
                                 
-        return bin_psd[start]                    
+        return self.bin_psd[start]                    
         
     def __call__(self, D):
         if np.shape(D) == (): # D is a scalar
