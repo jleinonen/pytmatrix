@@ -43,6 +43,29 @@ def run_tests():
     """
     suite = unittest.TestLoader().loadTestsFromTestCase(TMatrixTests)
     unittest.TextTestRunner(verbosity=2).run(suite)
+    
+    
+def test_backend():
+    """Replicate the test run of the backend T-Matrix code.
+       
+       Replicates the results of the default test run of the backend code
+       by Mishchenko. The user can use the function to manually check that 
+       the results match. Small errors may be present due to different compiler
+       optimizations.
+    """    
+    scatterer = Scatterer(radius=10.0, rat=0.1, wavelength=2*np.pi, 
+        m=complex(1.5,0.02), axis_ratio=0.5, ddelt=1e-3, ndgs=2, np=-1)
+    scatterer.thet0 = 56.0
+    scatterer.thet = 65.0
+    scatterer.phi0 = 114.0
+    scatterer.phi = 128.0
+    scatterer.alpha = 145.0
+    scatterer.beta = 52.0
+        
+    print "Amplitude matrix S:"
+    print scatterer.get_S()
+    print "Phase matrix Z:"
+    print scatterer.get_Z()
 
 
 class TMatrixTests(unittest.TestCase):
