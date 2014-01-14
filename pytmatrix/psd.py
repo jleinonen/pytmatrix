@@ -279,7 +279,7 @@ class PSDIntegrator(object):
            "description": description,
            "time": datetime.now(),
            "psd_scatter": (self.num_points, self.D_max, self._psd_D, 
-                self._S_table, self.Z_table, self._m_table, self.geometries),
+                self._S_table, self._Z_table, self._m_table, self.geometries),
            "version": tmatrix_aux.VERSION
            }
         pickle.dump(data, file(fn, 'w'), pickle.HIGHEST_PROTOCOL)
