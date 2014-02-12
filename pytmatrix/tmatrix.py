@@ -30,19 +30,19 @@ class Scatterer(object):
     """T-Matrix scattering from nonspherical particles.
 
     Class for simulating scattering from nonspherical particles with the 
-    T-matrix method. Uses a wrapper to the Fortran code by M. Mishchenko.
+    T-Matrix method. Uses a wrapper to the Fortran code by M. Mishchenko.
 
     Usage instructions:
 
     First, the class should be be initialized. Any attributes (see below)
     can be passed as keyword arguments to the constructor. For example:
-    tm = tmatrix.TMatrix(wavelength=2.0, m=complex(0,2))
+    sca = tmatrix.Scatterer(wavelength=2.0, m=complex(0,2))
 
     The properties of the scattering and the radiation should then be set 
     as attributes of this object. 
 
     The functions for computing the various scattering properties can then be 
-    called. The TMatrix object will automatically recompute the T-matrix 
+    called. The Scatterer object will automatically recompute the T-matrix 
     and/or the amplitude and phase matrices when needed.
 
     Attributes: 
@@ -60,9 +60,9 @@ class Scatterer(object):
             (degrees).
         Kw_sqr: The squared reference water dielectric factor for computing 
             radar reflectivity.
-        scatter: The function to use to compute the scattering properties.
-            Should be one of the TMatrix class methods (scatter_single, 
-            scatter_averaged_adaptive, scatter_averaged_fixed).
+        orient: The function to use to compute the scattering properties.
+            Should be one of the orientation module methods (orient_single, 
+            orient_averaged_adaptive, orient_averaged_fixed).
         or_pdf: Particle orientation PDF for orientational averaging.
         n_alpha: Number of integration points in the alpha Euler angle.
         n_beta: Number of integration points in the beta Euler angle.
@@ -132,7 +132,7 @@ class Scatterer(object):
 
         Args:
             geom: A tuple containing (thet0, thet, phi0, phi, alpha, beta).
-            See the TMatrix class documentation for a description of these
+            See the Scatterer class documentation for a description of these
             angles.
         """
         (self.thet0, self.thet, self.phi0, self.phi, self.alpha, 
@@ -144,7 +144,7 @@ class Scatterer(object):
 
         Returns:
             A tuple containing (thet0, thet, phi0, phi, alpha, beta).
-            See the TMatrix class documentation for a description of these
+            See the Scatterer class documentation for a description of these
             angles.
         """
         return (self.thet0, self.thet, self.phi0, self.phi, self.alpha, 

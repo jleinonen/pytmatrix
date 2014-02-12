@@ -36,7 +36,7 @@ def configuration(parent_package='',top_path=None):
         author_email = "jsleinonen@gmail.com",
         description = "T-matrix scattering computations",
         license = "MIT",
-        url = 'http://code.google.com/p/pytmatrix/',
+        url = 'https://github.com/jleinonen/pytmatrix',
         download_url = \
             'https://github.com/jleinonen/pytmatrix/releases/download/0.2.1/pytmatrix-0.2.1.zip',
         long_description = long_description,

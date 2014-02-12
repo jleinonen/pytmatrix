@@ -224,7 +224,7 @@ class PSDIntegrator(object):
         Initialize the scattering lookup tables for the different geometries.
         Before calling this, the following attributes must be set:
            num_points, m_func, axis_ratio_func, D_max, geometries
-        and additionally, all the desired attributes of the TMatrix class
+        and additionally, all the desired attributes of the Scatterer class
         (e.g. wavelength, aspect ratio).
         """
         self._psd_D = np.linspace(self.D_max/self.num_points, self.D_max, 
