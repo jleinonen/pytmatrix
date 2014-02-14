@@ -39,3 +39,45 @@ geom_horiz_back = (90.0, 90.0, 0.0, 180.0, 0.0, 0.0) #horiz. backscatter
 geom_horiz_forw = (90.0, 90.0, 0.0, 0.0, 0.0, 0.0) #horiz. forward scatter
 geom_vert_back = (0.0, 180.0, 0.0, 0.0, 0.0, 0.0) #vert. backscatter
 geom_vert_forw = (180.0, 180.0, 0.0, 0.0, 0.0, 0.0) #vert. forward scatter
+
+#Drop Shape Relationship Functions
+
+
+def dsr_thurai_2007(D_eq):
+    """
+    Drop shape relationship function from Thurai2007
+    (http://dx.doi.org/10.1175/JTECH2051.1) paper.
+    Arguments:
+        D_eq: Drop equivalent diameter
+    """
+
+    if D_eq < 0.7:
+        return 1.0
+    elif D_eq < 1.5:
+        return 1.173 - 0.5165*D_eq + 0.4698*D_eq**2 - 0.1317*D_eq**3 - \
+            8.5e-3*D_eq**4
+    else:
+        return 1.065 - 6.25e-2*D_eq - 3.99e-3*D_eq**2 + 7.66e-4*D_eq**3 - \
+            4.095e-5*D_eq**4
+
+
+def dsr_pb(D_eq):
+    """
+    Pruppacher and Beard drop shape relationship function.
+
+    Arguments:
+        D_eq: Drop equivalent diameter
+    """
+
+    return 1.03-0.062*D_eq
+
+
+def dsr_bc(D_eq):
+    """
+    Beard and Chuang drop shape relationship function.
+    Arguments:
+        D_eq: Drop equivalent diameter
+    """
+
+    return 1.0048 + 5.7*10**(-4) - 2.628 * 10**(-2) * D_eq**2 +\
+        3.682*10**(-3)*D_eq**3 - 1.677*10**-4 * D_eq**4
