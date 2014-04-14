@@ -32,8 +32,8 @@ def sca_intensity(scatterer, h_pol=True):
 
     Args:
         scatterer: a Scatterer instance.
-        h_pol: If true (default), use horizontal polarization.
-        If false, use vertical polarization.
+        h_pol: If True (default), use horizontal polarization.
+        If False, use vertical polarization.
 
     Returns:
         The differential scattering cross section.
@@ -48,8 +48,8 @@ def ldr(scatterer, h_pol=True):
 
     Args:
         scatterer: a Scatterer instance.
-        h_pol: If true (default), return LDR_h.
-        If false, return LDR_v.
+        h_pol: If True (default), return LDR_h.
+        If False, return LDR_v.
 
     Returns:
        The LDR.
@@ -64,6 +64,21 @@ def ldr(scatterer, h_pol=True):
 
 
 def sca_xsect(scatterer, h_pol=True):
+    """Scattering cross section for the current setup, with polarization.    
+
+    Args:
+        scatterer: a Scatterer instance.
+        h_pol: If True (default), use horizontal polarization.
+        If False, use vertical polarization.
+
+    Returns:
+        The scattering cross section.
+    """
+
+    if scatterer.psd_integrator is not None:
+        return scatterer.psd_integrator.get_angular_integrated(
+            scatterer.psd, scatterer.get_geometry(), "sca_xsect")
+
     old_geom = scatterer.get_geometry()    
 
     def d_xsect(thet, phi):
@@ -72,9 +87,11 @@ def sca_xsect(scatterer, h_pol=True):
         I = sca_intensity(scatterer, h_pol)
         return I * np.sin(thet)
 
-    xsect = dblquad(d_xsect, 0.0, 2*np.pi, lambda x: 0.0, lambda x: np.pi)[0]
-
-    scatterer.set_geometry(old_geom)
+    try:
+        xsect = dblquad(d_xsect, 0.0, 2*np.pi, lambda x: 0.0, 
+            lambda x: np.pi)[0]
+    finally:
+        scatterer.set_geometry(old_geom)
 
     return xsect
 
@@ -84,22 +101,31 @@ def ext_xsect(scatterer, h_pol=True):
 
     Args:
         scatterer: a Scatterer instance.
-        h_pol: If true (default), use horizontal polarization.
-        If false, use vertical polarization.
+        h_pol: If True (default), use horizontal polarization.
+        If False, use vertical polarization.
 
     Returns:
         The extinction cross section.
-        
-    NOTE: The scatterer object should be set to forward scattering geometry 
-    before calling this function.
     """
-    if (scatterer.thet0 != scatterer.thet) or \
-        (scatterer.phi0 != scatterer.phi):
 
-        raise ValueError("A forward scattering geometry is needed to " + \
-            "compute the extinction cross section.")
+    if scatterer.psd_integrator is not None:
+        try:
+            return scatterer.psd_integrator.get_angular_integrated(
+                scatterer.psd, scatterer.get_geometry(), "ext_xsect")
+        except AttributeError:
+            # Fall back to the usual method of computing this from S
+            pass
 
-    S = scatterer.get_S()
+    old_geom = scatterer.get_geometry()
+    (thet0, thet, phi0, phi, alpha, beta) = old_geom
+    try:
+        scatterer.set_geometry((thet0, thet0, phi0, phi0, alpha, beta))
+        S = scatterer.get_S()        
+    finally:
+        scatterer.set_geometry(old_geom)
+
+
+
     if h_pol:
         return 2 * scatterer.wavelength * S[1,1].imag
     else:
@@ -111,8 +137,8 @@ def ssa(scatterer, h_pol=True):
 
     Args:
         scatterer: a Scatterer instance.
-        h_pol: If true (default), use horizontal polarization.
-        If false, use vertical polarization.
+        h_pol: If True (default), use horizontal polarization.
+        If False, use vertical polarization.
 
     Returns:
         The single-scattering albedo.
@@ -126,12 +152,16 @@ def asym(scatterer, h_pol=True):
 
     Args:
         scatterer: a Scatterer instance.
-        h_pol: If true (default), use horizontal polarization.
-        If false, use vertical polarization.
+        h_pol: If True (default), use horizontal polarization.
+        If False, use vertical polarization.
 
     Returns:
         The asymmetry parameter.
     """
+
+    if scatterer.psd_integrator is not None:
+        return scatterer.psd_integrator.get_angular_integrated(
+            scatterer.psd, scatterer.get_geometry(), "asym")
 
     old_geom = scatterer.get_geometry()
 
@@ -145,10 +175,11 @@ def asym(scatterer, h_pol=True):
         I = sca_intensity(scatterer, h_pol)
         return I * cos_T_sin_t
 
-    cos_int = dblquad(integrand, 0.0, 2*np.pi, lambda x: 0.0, 
-        lambda x: np.pi)[0]
-
-    scatterer.set_geometry(old_geom)
+    try:
+        cos_int = dblquad(integrand, 0.0, 2*np.pi, lambda x: 0.0, 
+            lambda x: np.pi)[0]
+    finally:
+        scatterer.set_geometry(old_geom)
 
     return cos_int/sca_xsect(scatterer, h_pol)
 

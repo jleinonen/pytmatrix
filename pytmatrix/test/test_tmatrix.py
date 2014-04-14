@@ -282,6 +282,51 @@ class TMatrixTests(unittest.TestCase):
         test_less(self, abs(asym_horiz), 1e-8)
 
 
+    def test_against_mie(self):
+        """Test scattering parameters against Mie results
+        """
+        # Reference values computed with the Mie code of Maetzler
+        sca_xsect_ref = 4.4471684294079958
+        ext_xsect_ref = 7.8419745883848435
+        asym_ref = 0.76146646088675629
+
+        sca = Scatterer(wavelength=1, radius=1, m=complex(3.0,0.5))
+        sca_xsect = scatter.sca_xsect(sca)
+        ext_xsect = scatter.ext_xsect(sca)
+        asym = scatter.asym(sca)
+
+        test_less(self, abs(1-sca_xsect/sca_xsect_ref), 1e-6)
+        test_less(self, abs(1-ext_xsect/ext_xsect_ref), 1e-6)
+        test_less(self, abs(1-asym/asym_ref), 1e-6)
+
+
+    def test_integrated_x_sca(self):
+        """Test Rayleigh scattering cross section integrated over sizes.
+        """
+
+        m = complex(3.0,0.5)
+        K = (m**2-1)/(m**2+2)
+        N0 = 10
+        Lambda = 1e4
+
+        sca = Scatterer(wavelength=1, m=m)
+        sca.psd_integrator = psd.PSDIntegrator()        
+        sca.psd = psd.ExponentialPSD(N0=N0, Lambda=Lambda)
+        sca.psd.D_max = 0.002
+        sca.psd_integrator.D_max = sca.psd.D_max
+        # 256 is quite low, but we want to run the test reasonably fast
+        sca.psd_integrator.num_points = 256
+        sca.psd_integrator.init_scatter_table(sca, angular_integration=True)
+
+        # This size-integrated scattering cross section has an analytical value.
+        # Check that we can reproduce it.
+        sca_xsect_ref = 480*N0*np.pi**5*abs(K)**2/Lambda**7
+        sca_xsect = scatter.sca_xsect(sca)
+        test_less(self, abs(1-sca_xsect/sca_xsect_ref), 1e-3)
+
+
+
+
 def test_relative(tests, x, x_ref, limit=epsilon):
     abs_diff = abs(x-x_ref)
     rel_diff = abs_diff/abs(x_ref)

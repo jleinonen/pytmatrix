@@ -28,8 +28,8 @@ def radar_xsect(scatterer, h_pol=True):
 
     Args:
         scatterer: a Scatterer instance.
-        h_pol: If true (default), use horizontal polarization.
-        If false, use vertical polarization.
+        h_pol: If True (default), use horizontal polarization.
+        If False, use vertical polarization.
 
     Returns:
         The radar cross section.
@@ -48,8 +48,8 @@ def refl(scatterer, h_pol=True):
 
     Args:
         scatterer: a Scatterer instance.
-        h_pol: If true (default), use horizontal polarization.
-        If false, use vertical polarization.
+        h_pol: If True (default), use horizontal polarization.
+        If False, use vertical polarization.
 
     Returns:
         The reflectivity.
