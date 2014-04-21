@@ -296,7 +296,7 @@ class PSDIntegrator(object):
         return sca_prop
 
 
-    def init_scatter_table(self, tm, angular_integration=False):
+    def init_scatter_table(self, tm, angular_integration=False, verbose=False):
         """Initialize the scattering lookup tables.
         
         Initialize the scattering lookup tables for the different geometries.
@@ -308,10 +308,13 @@ class PSDIntegrator(object):
         Args:
             tm: a Scatterer instance.
             angular_integration: If True, also calculate the 
-            angle-integrated quantities (scattering cross section, extinction
-            cross section, asymmetry parameter). These are needed to call the
-            corresponding functions in the scatter module when PSD
-            integration is active. The default is False.
+                angle-integrated quantities (scattering cross section, 
+                extinction cross section, asymmetry parameter). These are 
+                needed to call the corresponding functions in the scatter 
+                module when PSD integration is active. The default is False.
+            verbose: if True, print information about the progress of the 
+                calculation (which may take a while). If False (default), 
+                run silently.
         """
         self._psd_D = np.linspace(self.D_max/self.num_points, self.D_max, 
             self.num_points)
@@ -345,6 +348,8 @@ class PSDIntegrator(object):
                             np.empty(self.num_points)
 
             for (i,D) in enumerate(self._psd_D):
+                if verbose:
+                    print("Computing point {i} at D={D}...".format(i=i, D=D))
                 if self.m_func != None:
                     tm.m = self.m_func(D)
                 if self.axis_ratio_func != None:

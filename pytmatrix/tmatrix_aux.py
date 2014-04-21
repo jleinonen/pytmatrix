@@ -48,10 +48,10 @@ def dsr_thurai_2007(D_eq):
     Drop shape relationship function from Thurai2007
     (http://dx.doi.org/10.1175/JTECH2051.1) paper.
     Arguments:
-        D_eq: Drop volume-equivalent diameter
+        D_eq: Drop volume-equivalent diameter (mm)
 
     Returns:
-        r: The vertical to horizontal drop axis ratio. Note: the Scatterer class 
+        r: The vertical-to-horizontal drop axis ratio. Note: the Scatterer class
         expects horizontal to vertical, so you should pass 1/dsr_thurai_2007
     """
 
@@ -70,9 +70,9 @@ def dsr_pb(D_eq):
     Pruppacher and Beard drop shape relationship function.
 
     Arguments:
-        D_eq: Drop volume-equivalent diameter
+        D_eq: Drop volume-equivalent diameter (mm)
     Returns:
-        r: The vertical to horizontal drop axis ratio. Note: the Scatterer class 
+        r: The vertical-to-horizontal drop axis ratio. Note: the Scatterer class
         expects horizontal to vertical, so you should pass 1/dsr_pb
     """
     return 1.03-0.062*D_eq
@@ -82,9 +82,9 @@ def dsr_bc(D_eq):
     """
     Beard and Chuang drop shape relationship function.
     Arguments:
-        D_eq: Drop volume-equivalent diameter
+        D_eq: Drop volume-equivalent diameter (mm)
     Returns:
-        r: The vertical to horizontal drop axis ratio. Note: the Scatterer class 
+        r: The vertical-to-horizontal drop axis ratio. Note: the Scatterer class
         expects horizontal to vertical, so you should pass 1/dsr_bc
     """
 
