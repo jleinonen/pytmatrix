@@ -286,12 +286,16 @@ class PSDIntegrator(object):
                 self._psd_D
             )
         elif property_name == "asym":
-            sca_prop = trapz(
-                self._angular_table["asym"][geometry] * \
-                self._angular_table["sca_xsect"][geometry] * psd_w,  
-                self._psd_D
-            )
-            sca_prop /= sca_xsect(geometry)
+            sca_xsect_int = sca_xsect(geometry)
+            if sca_xsect_int > 0:
+                sca_prop = trapz(
+                    self._angular_table["asym"][geometry] * \
+                    self._angular_table["sca_xsect"][geometry] * psd_w,  
+                    self._psd_D
+                )
+                sca_prop /= sca_xsect_int
+            else:
+                sca_prop = 0.0
 
         return sca_prop
 

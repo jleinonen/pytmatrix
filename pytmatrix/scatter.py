@@ -144,7 +144,8 @@ def ssa(scatterer, h_pol=True):
         The single-scattering albedo.
     """
 
-    return sca_xsect(scatterer, h_pol=h_pol)/ext_xsect(scatterer, h_pol=h_pol)
+    ext_xs = ext_xsect(scatterer, h_pol=h_pol)
+    return sca_xsect(scatterer, h_pol=h_pol)/ext_xs if ext_xs > 0.0 else 0.0
 
 
 def asym(scatterer, h_pol=True):
