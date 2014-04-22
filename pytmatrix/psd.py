@@ -416,7 +416,7 @@ class PSDIntegrator(object):
             warnings.warn("Loading data saved with another version.", Warning)
 
         (self.num_points, self.D_max, self._psd_D, self._S_table, 
-            self._Z_table, self._m_table, self._angular_table,
+            self._Z_table, self._angular_table, self._m_table, 
             self.geometries) = data["psd_scatter"]
         return (data["time"], data["description"])
 
