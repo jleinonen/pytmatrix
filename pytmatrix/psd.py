@@ -75,6 +75,44 @@ class ExponentialPSD(object):
             return False
 
 
+class UnnormalizedGammaPSD(ExponentialPSD):
+    """Gamma particle size distribution (PSD).
+    
+    Callable class to provide an gamma PSD with the given 
+    parameters. The attributes can also be given as arguments to the 
+    constructor.
+
+    Attributes:
+        N0: the intercept parameter.
+        Lambda: the inverse scale parameter
+        mu: the shape parameter
+        D_max: the maximum diameter to consider (defaults to 11/Lambda,
+            i.e. approx. 3*D0, if None)
+
+    Args (call):
+        D: the particle diameter.
+
+    Returns (call):
+        The PSD value for the given diameter.    
+        Returns 0 for all diameters larger than D_max.
+    """
+    def __init__(self, N0=1.0, Lambda=1.0, mu=0.0, D_max=None):
+        super(UnnormalizedGammaPSD, self).__init__(N0=N0, Lambda=Lambda, 
+            D_max=D_max)
+        self.mu = mu
+
+    def __call__(self, D):
+        return super(UnnormalizedGammaPSD, self).__call__(D) * D**self.mu
+
+    def __eq__(self, other):
+        try:
+            return super(UnnormalizedGammaPSD, self).__eq__(other) and \
+                self.mu == other.mu
+        except AttributeError:
+            return False
+        
+
+
 class GammaPSD(object):
     """Normalized gamma particle size distribution (PSD).
     
