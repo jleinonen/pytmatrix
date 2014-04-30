@@ -102,7 +102,14 @@ class UnnormalizedGammaPSD(ExponentialPSD):
         self.mu = mu
 
     def __call__(self, D):
-        return super(UnnormalizedGammaPSD, self).__call__(D) * D**self.mu
+        # For large mu, this is better numerically than multiplying by D**mu
+        psd = self.N0 * np.exp(self.mu*np.log(D)-self.Lambda*D)
+        if np.shape(D) == ():
+            if D > self.D_max:
+                return 0.0
+        else:
+            psd[(D > self.D_max)] = 0.0
+        return psd
 
     def __eq__(self, other):
         try:
@@ -144,7 +151,7 @@ class GammaPSD(object):
 
     def __call__(self, D):
         d = (D/self.D0)
-        psd = self.nf * d**self.mu * np.exp(-(3.67+self.mu)*d)
+        psd = self.nf * np.exp(self.mu*np.log(d)-(3.67+self.mu)*d)
         if np.shape(D) == ():
             if D > self.D_max:
                 return 0.0

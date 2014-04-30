@@ -249,7 +249,7 @@ class Scatterer(object):
                 r_eq = self.radius*(0.75/self.axis_ratio)**(2.0/3.0)
         else:
             raise AttributeError("Unsupported shape for maximum radius.")
-        return r_eq                
+        return r_eq
 
 
     def get_SZ_single(self, alpha=None, beta=None):
