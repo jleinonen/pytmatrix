@@ -38,7 +38,7 @@ class PSD(object):
         else:
             return np.zeros_like(D)
 
-    def __eq__(self.other):
+    def __eq__(self, other):
         return False
 
 
