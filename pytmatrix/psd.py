@@ -31,7 +31,18 @@ from scipy.special import gamma
 import scatter, tmatrix_aux
 
 
-class ExponentialPSD(object):
+class PSD(object):
+    def __call__(self, D):
+        if np.shape(D) == ():
+            return 0.0
+        else:
+            return np.zeros_like(D)
+
+    def __eq__(self.other):
+        return False
+
+
+class ExponentialPSD(PSD):
     """Exponential particle size distribution (PSD).
     
     Callable class to provide an exponential PSD with the given 
@@ -120,7 +131,7 @@ class UnnormalizedGammaPSD(ExponentialPSD):
         
 
 
-class GammaPSD(object):
+class GammaPSD(PSD):
     """Normalized gamma particle size distribution (PSD).
     
     Callable class to provide a normalized gamma PSD with the given 
@@ -168,7 +179,7 @@ class GammaPSD(object):
             return False
 
 
-class BinnedPSD(object):
+class BinnedPSD(PSD):
     """Binned gamma particle size distribution (PSD).
     
     Callable class to provide a binned PSD with the given bin edges and PSD
@@ -292,7 +303,7 @@ class PSDIntegrator(object):
             raise AttributeError(
                 "Initialize or load the scattering table first.")
 
-        if self._previous_psd != psd:
+        if (not isinstance(psd, PSD)) or self._previous_psd != psd:
             self._S_dict = {}
             self._Z_dict = {}
             psd_w = psd(self._psd_D)
