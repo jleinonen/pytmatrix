@@ -28,6 +28,8 @@ of homogeneous nonspherical scatterers with the T-Matrix method.
 Requires NumPy and SciPy.
 """
 
+import sys
+
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('pytmatrix', parent_package, top_path,
@@ -51,11 +53,14 @@ def configuration(parent_package='',top_path=None):
         ]
     )
 
+    kw = {}
+    if sys.platform == 'darwin':
+        kw['extra_link_args'] = ['-undefined dynamic_lookup', '-bundle']
     config.add_extension('fortran_tm.pytmatrix',
         sources=['pytmatrix/fortran_tm/pytmatrix.pyf',
             'pytmatrix/fortran_tm/ampld.lp.f',
             'pytmatrix/fortran_tm/lpd.f'],
-        )
+        **kw)
 
     return config
 
