@@ -133,6 +133,9 @@ def orient_averaged_fixed(tm):
     ap = np.linspace(0, 360, tm.n_alpha+1)[:-1]
     aw = 1.0/tm.n_alpha
 
+    import orientation
+    tm.orient = orientation.orient_averaged_fixed
+    tm._init_orient()
     for alpha in ap:
         for (beta, w) in zip(tm.beta_p, tm.beta_w):
             (S_ang, Z_ang) = tm.get_SZ_single(alpha=alpha, beta=beta)
