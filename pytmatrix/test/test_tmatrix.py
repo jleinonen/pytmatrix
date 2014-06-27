@@ -62,10 +62,10 @@ def test_backend():
     scatterer.alpha = 145.0
     scatterer.beta = 52.0
         
-    print "Amplitude matrix S:"
-    print scatterer.get_S()
-    print "Phase matrix Z:"
-    print scatterer.get_Z()
+    print("Amplitude matrix S:")
+    print(scatterer.get_S())
+    print("Phase matrix Z:")
+    print(scatterer.get_Z())
 
 
 class TMatrixTests(unittest.TestCase):
