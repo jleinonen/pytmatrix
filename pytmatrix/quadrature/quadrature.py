@@ -21,6 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import numpy as np
 from scipy.integrate import quad
+import sys
 
 
 def discrete_gautschi(z, w, n_iter):
@@ -30,6 +31,9 @@ def discrete_gautschi(z, w, n_iter):
     wz = z*w
     a = np.empty(n_iter)
     b = np.empty(n_iter)
+
+    if sys.version_info[0] > 2:
+        xrange = range
         
     for j in xrange(n_iter):
         p_norm = np.dot(w*p,p)
