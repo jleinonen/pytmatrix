@@ -107,6 +107,7 @@ class UnnormalizedGammaPSD(ExponentialPSD):
         The PSD value for the given diameter.    
         Returns 0 for all diameters larger than D_max.
     """
+    
     def __init__(self, N0=1.0, Lambda=1.0, mu=0.0, D_max=None):
         super(UnnormalizedGammaPSD, self).__init__(N0=N0, Lambda=Lambda, 
             D_max=D_max)

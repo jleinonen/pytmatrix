@@ -80,7 +80,7 @@ class Scatterer(object):
     """
 
     _attr_list = set(["radius", "rat", "wavelength", "m", "axis_ratio", 
-        "np", "ddelt", "ndgs", "alpha", "beta", "thet0", "thet", 
+        "shape", "np", "ddelt", "ndgs", "alpha", "beta", "thet0", "thet", 
         "phi0", "phi", "Kw_sqr", "orient", "or_pdf", "n_alpha", "n_beta",
         "psd_integrator", "psd"])
 
