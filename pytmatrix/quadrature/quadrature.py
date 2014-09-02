@@ -33,9 +33,11 @@ def discrete_gautschi(z, w, n_iter):
     b = np.empty(n_iter)
 
     if sys.version_info[0] > 2:
-        xrange = range
+        prange = range
+    else:
+        prange = xrange
         
-    for j in xrange(n_iter):
+    for j in prange(n_iter):
         p_norm = np.dot(w*p,p)
         a[j] = np.dot(wz*p,p)/p_norm
         b[j] = 0.0 if j==0 else p_norm/np.dot(w*p_prev,p_prev)
