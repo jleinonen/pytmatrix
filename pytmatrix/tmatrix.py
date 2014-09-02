@@ -21,9 +21,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import warnings
 import numpy as np
-from fortran_tm import pytmatrix
-from quadrature import quadrature
-import orientation
+from pytmatrix.fortran_tm import pytmatrix
+from pytmatrix.quadrature import quadrature
+import pytmatrix.orientation as orientation
 
 
 
