@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from os import path
 import numpy as np
 from scipy import interpolate
-from tmatrix_aux import wl_S, wl_C, wl_X, wl_Ku, wl_Ka, wl_W
+from pytmatrix.tmatrix_aux import wl_S, wl_C, wl_X, wl_Ku, wl_Ka, wl_W
 
 
 def mg_refractive(m, mix):

@@ -133,7 +133,7 @@ def orient_averaged_fixed(tm):
     ap = np.linspace(0, 360, tm.n_alpha+1)[:-1]
     aw = 1.0/tm.n_alpha
 
-    import orientation
+    import pytmatrix.orientation as orientation
     tm.orient = orientation.orient_averaged_fixed
     tm._init_orient()
     for alpha in ap:
