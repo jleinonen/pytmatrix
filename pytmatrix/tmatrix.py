@@ -79,7 +79,7 @@ class Scatterer(object):
             effect if psd_integrator is None.
     """
 
-    _attr_list = set(["radius", "rat", "wavelength", "m", "axis_ratio", 
+    _attr_list = set(["radius", "radius_type", "wavelength", "m", "axis_ratio", 
         "shape", "np", "ddelt", "ndgs", "alpha", "beta", "thet0", "thet", 
         "phi0", "phi", "Kw_sqr", "orient", "or_pdf", "n_alpha", "n_beta",
         "psd_integrator", "psd"])
