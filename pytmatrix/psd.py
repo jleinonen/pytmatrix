@@ -50,6 +50,9 @@ class ExponentialPSD(PSD):
     parameters. The attributes can also be given as arguments to the 
     constructor.
 
+    The PSD form is:
+    N(D) = N0 * exp(-Lambda*D)
+
     Attributes:
         N0: the intercept parameter.
         Lambda: the inverse scale parameter        
@@ -94,6 +97,9 @@ class UnnormalizedGammaPSD(ExponentialPSD):
     parameters. The attributes can also be given as arguments to the 
     constructor.
 
+    The PSD form is:
+    N(D) = N0 * D**mu * exp(-Lambda*D)
+
     Attributes:
         N0: the intercept parameter.
         Lambda: the inverse scale parameter
@@ -118,10 +124,10 @@ class UnnormalizedGammaPSD(ExponentialPSD):
         # For large mu, this is better numerically than multiplying by D**mu
         psd = self.N0 * np.exp(self.mu*np.log(D)-self.Lambda*D)
         if np.shape(D) == ():
-            if D > self.D_max:
+            if (D > self.D_max) or (D==0):
                 return 0.0
         else:
-            psd[(D > self.D_max)] = 0.0
+            psd[(D > self.D_max) | (D == 0)] = 0.0
         return psd
 
     def __eq__(self, other):
@@ -139,6 +145,10 @@ class GammaPSD(PSD):
     Callable class to provide a normalized gamma PSD with the given 
     parameters. The attributes can also be given as arguments to the 
     constructor.
+
+    The PSD form is:
+    N(D) = Nw * f(mu) * (D/D0)**mu * exp(-(3.67+mu)*D/D0)
+    f(mu) = 6/(3.67**4) * (3.67+mu)**(mu+4)/Gamma(mu+4)
 
     Attributes:
         D0: the median volume diameter.
