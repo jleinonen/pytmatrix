@@ -28,7 +28,8 @@ import warnings
 import numpy as np
 from scipy.integrate import trapz
 from scipy.special import gamma
-import scatter, tmatrix_aux
+import pytmatrix.scatter as scatter
+import pytmatrix.tmatrix_aux as tmatrix_aux
 
 
 class PSD(object):

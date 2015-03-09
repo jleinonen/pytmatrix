@@ -20,9 +20,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import warnings
-from tmatrix import Scatterer
-from psd import PSDIntegrator, GammaPSD, BinnedPSD
-import tmatrix_aux
+from pytmatrix.tmatrix import Scatterer
+from pytmatrix.psd import PSDIntegrator, GammaPSD, BinnedPSD
+import pytmatrix.tmatrix_aux as tmatrix_aux
 
 
 class TMatrixPSD(Scatterer):
