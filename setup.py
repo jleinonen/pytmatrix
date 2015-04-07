@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (C) 2009-2013 Jussi Leinonen
+Copyright (C) 2009-2015 Jussi Leinonen, Finnish Meteorological Institute, 
+California Institute of Technology
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -33,14 +34,14 @@ import sys
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('pytmatrix', parent_package, top_path,
-        version = '0.2.1',
+        version = '0.3.0',
         author  = "Jussi Leinonen",
         author_email = "jsleinonen@gmail.com",
         description = "T-matrix scattering computations",
         license = "MIT",
         url = 'https://github.com/jleinonen/pytmatrix',
         download_url = \
-            'https://github.com/jleinonen/pytmatrix/releases/download/0.2.1/pytmatrix-0.2.1.zip',
+            'https://github.com/jleinonen/pytmatrix/releases/download/0.3.0/pytmatrix-0.3.0.zip',
         long_description = long_description,
         classifiers = [
             "Development Status :: 4 - Beta",

@@ -1,6 +1,6 @@
 """
-Copyright (C) 2009-2013 Jussi Leinonen
-
+Copyright (C) 2009-2013 Jussi LeinonenCopyright (C) 2009-2015 Jussi Leinonen, Finnish Meteorological Institute, 
+California Institute of Technology
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
 the Software without restriction, including without limitation the rights to

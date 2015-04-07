@@ -1,5 +1,6 @@
 """
-Copyright (C) 2009-2013 Jussi Leinonen
+Copyright (C) 2009-2015 Jussi Leinonen, Finnish Meteorological Institute, 
+California Institute of Technology
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -176,10 +177,10 @@ class GammaPSD(PSD):
         d = (D/self.D0)
         psd = self.nf * np.exp(self.mu*np.log(d)-(3.67+self.mu)*d)
         if np.shape(D) == ():
-            if D > self.D_max:
+            if (D > self.D_max) or (D==0.0):
                 return 0.0
         else:
-            psd[D > self.D_max] = 0.0
+            psd[(D > self.D_max) | (D==0.0)] = 0.0
         return psd
 
     def __eq__(self, other):

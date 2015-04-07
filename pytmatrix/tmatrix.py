@@ -1,5 +1,6 @@
 """
-Copyright (C) 2009-2013 Jussi Leinonen
+Copyright (C) 2009-2015 Jussi Leinonen, Finnish Meteorological Institute, 
+California Institute of Technology
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -48,15 +49,20 @@ class Scatterer(object):
 
     Attributes: 
         radius: Equivalent radius.
-        radius_type: If rat==Scatterer.RADIUS_EQUAL_VOLUME (default), radius
-            is the equivalent volume radius.
-            If rat==Scatterer.RADIUS_MAXIMUM, radius is the maximum radius.
-            Otherwise, radius is the equivalent area radius.
+        radius_type: If radius_type==Scatterer.RADIUS_EQUAL_VOLUME (default),
+            radius is the equivalent volume radius.
+            If radius_type==Scatterer.RADIUS_MAXIMUM, radius is the maximum 
+            radius.
+            If radius_type==Scatterer.RADIUS_EQUAL_AREA, 
+            radius is the equivalent area radius.
         wavelength: The wavelength of incident light (same units as axi).
         m: The complex refractive index.
         axis_ratio: The horizontal-to-rotational axis ratio.
-        shape: Particle shape. -1: spheroids; -2: cylinders; 
-            n > 0: nth degree Chebyshev particles (not fully supported).
+        shape: Particle shape. 
+            Scatterer.SHAPE_SPHEROID: spheroid
+            Scatterer.SHAPE_CYLINDER: cylinders; 
+            Scatterer.SHAPE_CHEBYSHEV: Chebyshev particles (not yet 
+                supported).
         alpha, beta: The Euler angles of the particle orientation (degrees).
         thet0, thet: The zenith angles of incident and scattered radiation 
             (degrees).
@@ -79,16 +85,18 @@ class Scatterer(object):
             effect if psd_integrator is None.
     """
 
-    _attr_list = set(["radius", "radius_type", "wavelength", "m", "axis_ratio", 
-        "shape", "np", "ddelt", "ndgs", "alpha", "beta", "thet0", "thet", 
-        "phi0", "phi", "Kw_sqr", "orient", "or_pdf", "n_alpha", "n_beta",
-        "psd_integrator", "psd"])
+    _attr_list = set(["radius", "radius_type", "wavelength", "m",
+        "axis_ratio", "shape", "np", "ddelt", "ndgs", "alpha",
+        "beta", "thet0", "thet", "phi0", "phi", "Kw_sqr", "orient",
+        "scatter", "or_pdf", "n_alpha", "n_beta", "psd_integrator",
+        "psd"])
 
     _deprecated_aliases = {"axi": "radius",
         "lam": "wavelength",
         "eps": "axis_ratio",
         "rat": "radius_type",
-        "np": "shape"
+        "np": "shape",
+        "scatter": "orient"
     }
 
     RADIUS_EQUAL_VOLUME = 1.0
