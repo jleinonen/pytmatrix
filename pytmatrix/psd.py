@@ -240,8 +240,8 @@ class BinnedPSD(PSD):
             return np.array([self.psd_for_D(d) for d in D])
     
     def __eq__(self, other):
-        if self is None or other is None:
-            return self is None and other is None
+        if other is None:
+            return False
         return len(self.bin_edges) == len(other.bin_edges) and \
             (self.bin_edges == other.bin_edges).all() and \
             (self.bin_psd == other.bin_psd).all()
