@@ -241,9 +241,7 @@ class BinnedPSD(PSD):
     
     def __eq__(self, other):
         if self is None or other is None:
-            if self is None and other is None:
-                return True
-            return False
+            return self is None and other is None
         return len(self.bin_edges) == len(other.bin_edges) and \
             (self.bin_edges == other.bin_edges).all() and \
             (self.bin_psd == other.bin_psd).all()
