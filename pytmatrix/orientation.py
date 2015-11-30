@@ -28,8 +28,9 @@ def gaussian_pdf(std=10.0, mean=0.0):
     """Gaussian PDF for orientation averaging.
 
     Args:
-        std: The standard deviation of the PDF (the mean is always taken to 
-            be 0).
+        std: The standard deviation in degrees of the Gaussian PDF
+        mean: The mean in degrees of the Gaussian PDF.  This should be a number
+          in the interval [0, 180)
 
     Returns:
         pdf(x), a function that returns the value of the spherical Jacobian- 
