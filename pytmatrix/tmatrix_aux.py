@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 #current version
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 
 #typical wavelengths [mm] at different bands
 wl_S = 111.0
