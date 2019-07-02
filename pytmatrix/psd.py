@@ -474,7 +474,8 @@ class PSDIntegrator(object):
                 self._m_table, self.geometries),
            "version": tmatrix_aux.VERSION
            }
-        pickle.dump(data, file(fn, 'w'), pickle.HIGHEST_PROTOCOL)
+        with open(fn, 'wb') as f:
+            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
 
     def load_scatter_table(self, fn):
@@ -485,7 +486,8 @@ class PSDIntegrator(object):
         Args:
             fn: The name of the scattering table file.            
         """
-        data = pickle.load(file(fn))
+        with open(fn, 'rb') as f:
+            data = pickle.load(f)
 
         if ("version" not in data) or (data["version"]!=tmatrix_aux.VERSION):
             warnings.warn("Loading data saved with another version.", Warning)
@@ -494,4 +496,3 @@ class PSDIntegrator(object):
             self._Z_table, self._angular_table, self._m_table, 
             self.geometries) = data["psd_scatter"]
         return (data["time"], data["description"])
-
