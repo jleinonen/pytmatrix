@@ -34,7 +34,7 @@ import sys
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('pytmatrix', parent_package, top_path,
-        version = '0.3.1',
+        version = '0.3.2',
         author  = "Jussi Leinonen",
         author_email = "jsleinonen@gmail.com",
         description = "T-matrix scattering computations",

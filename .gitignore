@@ -4,6 +4,7 @@
 dist
 build
 build.sh
+__pycache__/
 *.py[cod]
 
 # C extensions
