@@ -76,7 +76,7 @@ def dsr_pb(D_eq):
         r: The vertical-to-horizontal drop axis ratio. Note: the Scatterer class
         expects horizontal to vertical, so you should pass 1/dsr_pb
     """
-    return 1.03-0.062*D_eq
+    return 1.03 - 0.062*D_eq
 
 
 def dsr_bc(D_eq):
@@ -89,5 +89,5 @@ def dsr_bc(D_eq):
         expects horizontal to vertical, so you should pass 1/dsr_bc
     """
 
-    return 1.0048 + 5.7e-04 - 2.628e-02 * D_eq**2 +\
+    return 1.0048 + 5.7e-04*D_eq - 2.628e-02 * D_eq**2 + \
         3.682e-03*D_eq**3 - 1.677e-04 * D_eq**4
