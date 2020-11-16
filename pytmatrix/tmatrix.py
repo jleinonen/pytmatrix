@@ -249,12 +249,12 @@ class Scatterer(object):
             if self.axis_ratio > 1.0: # oblate
                 r_eq = self.radius/self.axis_ratio**(1.0/3.0)
             else: # prolate
-                r_eq = self.radius/self.axis_ratio**(2.0/3.0)
+                r_eq = self.radius*self.axis_ratio**(2.0/3.0)
         elif self.shape == Scatterer.SHAPE_CYLINDER:
             if self.axis_ratio > 1.0: # oblate
                 r_eq = self.radius*(0.75/self.axis_ratio)**(1.0/3.0)
             else: # prolate
-                r_eq = self.radius*(0.75/self.axis_ratio)**(2.0/3.0)
+                r_eq = self.radius*(0.75*self.axis_ratio)**(2.0/3.0)
         else:
             raise AttributeError("Unsupported shape for maximum radius.")
         return r_eq
