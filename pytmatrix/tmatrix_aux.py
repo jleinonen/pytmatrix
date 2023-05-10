@@ -1,5 +1,5 @@
 """
-Copyright (C) 2009-2015 Jussi Leinonen, Finnish Meteorological Institute, 
+Copyright (C) 2009-2023 Jussi Leinonen, Finnish Meteorological Institute, 
 California Institute of Technology
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 #current version
-VERSION = "0.3.2"
+VERSION = "0.3.3"
 
 #typical wavelengths [mm] at different bands
 wl_S = 111.0

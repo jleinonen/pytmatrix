@@ -1,5 +1,5 @@
 """
-Copyright (C) 2009-2015 Jussi Leinonen, Finnish Meteorological Institute, 
+Copyright (C) 2009-2023 Jussi Leinonen, Finnish Meteorological Institute, 
 California Institute of Technology
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
