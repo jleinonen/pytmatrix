@@ -27,7 +27,6 @@ from pytmatrix.quadrature import quadrature
 import pytmatrix.orientation as orientation
 
 
-
 class Scatterer(object):
     """T-Matrix scattering from nonspherical particles.
 

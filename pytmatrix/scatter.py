@@ -78,7 +78,9 @@ def sca_xsect(scatterer, h_pol=True):
 
     if scatterer.psd_integrator is not None:
         return scatterer.psd_integrator.get_angular_integrated(
-            scatterer.psd, scatterer.get_geometry(), "sca_xsect")
+            scatterer.psd, scatterer.get_geometry(), "sca_xsect",
+            h_pol=h_pol
+        )
 
     old_geom = scatterer.get_geometry()    
 
@@ -112,7 +114,9 @@ def ext_xsect(scatterer, h_pol=True):
     if scatterer.psd_integrator is not None:
         try:
             return scatterer.psd_integrator.get_angular_integrated(
-                scatterer.psd, scatterer.get_geometry(), "ext_xsect")
+                scatterer.psd, scatterer.get_geometry(), "ext_xsect",
+                h_pol=h_pol
+            )
         except AttributeError:
             # Fall back to the usual method of computing this from S
             pass
@@ -124,8 +128,6 @@ def ext_xsect(scatterer, h_pol=True):
         S = scatterer.get_S()        
     finally:
         scatterer.set_geometry(old_geom)
-
-
 
     if h_pol:
         return 2 * scatterer.wavelength * S[1,1].imag
@@ -163,7 +165,9 @@ def asym(scatterer, h_pol=True):
 
     if scatterer.psd_integrator is not None:
         return scatterer.psd_integrator.get_angular_integrated(
-            scatterer.psd, scatterer.get_geometry(), "asym")
+            scatterer.psd, scatterer.get_geometry(), "asym",
+            h_pol=h_pol    
+        )
 
     old_geom = scatterer.get_geometry()
 

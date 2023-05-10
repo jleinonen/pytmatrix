@@ -334,18 +334,19 @@ class PSDIntegrator(object):
         return (self._S_dict[geometry], self._Z_dict[geometry])
 
 
-    def get_angular_integrated(self, psd, geometry, property_name):
+    def get_angular_integrated(self, psd, geometry, property_name, h_pol=True):
         if self._angular_table is None:
             raise AttributeError(
                 "Initialize or load the table of angular-integrated " + 
                 "quantities first."
             )
 
+        pol = "h_pol" if h_pol else "v_pol"
         psd_w = psd(self._psd_D)
 
         def sca_xsect(geom):
             return trapz(
-                self._angular_table["sca_xsect"][geom] * psd_w, 
+                self._angular_table["sca_xsect"][pol][geom] * psd_w, 
                 self._psd_D
             )
     
@@ -353,15 +354,15 @@ class PSDIntegrator(object):
             sca_prop = sca_xsect(geometry)
         elif property_name == "ext_xsect":
             sca_prop = trapz(
-                self._angular_table["ext_xsect"][geometry] * psd_w, 
+                self._angular_table["ext_xsect"][pol][geometry] * psd_w, 
                 self._psd_D
             )
         elif property_name == "asym":
             sca_xsect_int = sca_xsect(geometry)
             if sca_xsect_int > 0:
                 sca_prop = trapz(
-                    self._angular_table["asym"][geometry] * \
-                    self._angular_table["sca_xsect"][geometry] * psd_w,  
+                    self._angular_table["asym"][pol][geometry] * \
+                    self._angular_table["sca_xsect"][pol][geometry] * psd_w,  
                     self._psd_D
                 )
                 sca_prop /= sca_xsect_int
@@ -399,8 +400,11 @@ class PSDIntegrator(object):
         self._previous_psd = None
         self._m_table = np.empty(self.num_points, dtype=complex)
         if angular_integration:
-            self._angular_table = {"sca_xsect": {}, "ext_xsect": {}, 
-                "asym": {}}
+            self._angular_table = {
+                "sca_xsect": {"h_pol": {}, "v_pol": {}},
+                "ext_xsect": {"h_pol": {}, "v_pol": {}}, 
+                "asym": {"h_pol": {}, "v_pol": {}}
+            }
         else:
             self._angular_table = None
         
@@ -419,8 +423,9 @@ class PSDIntegrator(object):
 
                 if angular_integration:
                     for int_var in ["sca_xsect", "ext_xsect", "asym"]:
-                        self._angular_table[int_var][geom] = \
-                            np.empty(self.num_points)
+                        for pol in ["h_pol", "v_pol"]:
+                            self._angular_table[int_var][pol][geom] = \
+                                np.empty(self.num_points)
 
             for (i,D) in enumerate(self._psd_D):
                 if verbose:
@@ -438,18 +443,19 @@ class PSDIntegrator(object):
                     self._Z_table[geom][:,:,i] = Z
 
                     if angular_integration:
-                        self._angular_table["sca_xsect"][geom][i] = \
-                            scatter.sca_xsect(tm)
-                        self._angular_table["ext_xsect"][geom][i] = \
-                            scatter.ext_xsect(tm)
-                        self._angular_table["asym"][geom][i] = \
-                            scatter.asym(tm)
+                        for pol in ["h_pol", "v_pol"]:
+                            h_pol = (pol == "h_pol")
+                            self._angular_table["sca_xsect"][pol][geom][i] = \
+                                scatter.sca_xsect(tm, h_pol=h_pol)
+                            self._angular_table["ext_xsect"][pol][geom][i] = \
+                                scatter.ext_xsect(tm, h_pol=h_pol)
+                            self._angular_table["asym"][pol][geom][i] = \
+                                scatter.asym(tm, h_pol=h_pol)
         finally:
             #restore old values
             (tm.m, tm.axis_ratio, tm.radius, tm.psd_integrator) = \
                 (old_m, old_axis_ratio, old_radius, old_psd_integrator) 
             tm.set_geometry(old_geom)
-
 
 
     def save_scatter_table(self, fn, description=""):
