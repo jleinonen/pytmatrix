@@ -67,7 +67,7 @@ def orient_single(tm):
     """Compute the T-matrix using a single orientation scatterer.
 
     Args:
-        tm: TMatrix (or descendant) instance
+        tm: Scatterer (or descendant) instance
 
     Returns:
         The amplitude (S) and phase (Z) matrices.
@@ -83,7 +83,7 @@ def orient_averaged_adaptive(tm):
     the alpha and beta attributes.
 
     Args:
-        tm: TMatrix (or descendant) instance
+        tm: Scatterer (or descendant) instance
 
     Returns:
         The amplitude (S) and phase (Z) matrices.
@@ -125,7 +125,7 @@ def orient_averaged_fixed(tm):
     the alpha and beta attributes.
 
     Args:
-        tm: TMatrix (or descendant) instance.
+        tm: Scatterer (or descendant) instance.
 
     Returns:
         The amplitude (S) and phase (Z) matrices.
