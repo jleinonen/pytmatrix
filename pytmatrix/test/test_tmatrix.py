@@ -1,5 +1,5 @@
 """
-Copyright (C) 2009-2013 Jussi Leinonen
+Copyright (C) 2009-2023 Jussi Leinonen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -324,8 +324,31 @@ class TMatrixTests(unittest.TestCase):
         sca_xsect = scatter.sca_xsect(sca)
         test_less(self, abs(1-sca_xsect/sca_xsect_ref), 1e-3)
 
+    def test_attn_polarization(self):
+        """Test attenuation calculation for multiple polarization with PSD.
+        """
 
+        wavelength = tmatrix_aux.wl_C
+        m = refractive.m_w_20C[wavelength]
+        K = (m**2-1)/(m**2+2)
+        diam_max = 0.75
+        gamma_psd = psd.GammaPSD(D0=0.25, Nw=10e3, mu=0, D_max=diam_max)
 
+        sca = Scatterer(wavelength=wavelength, m=m)
+        sca.axis_ratio = 1.0/0.6
+        sca.psd_integrator = psd.PSDIntegrator()        
+        sca.psd = gamma_psd
+        sca.psd_integrator.D_max = sca.psd.D_max
+        # 64 is quite low, but we want to run the test reasonably fast
+        sca.psd_integrator.num_points = 64
+        sca.psd_integrator.init_scatter_table(sca, angular_integration=True)
+
+        self.assertEqual(radar.Ai(sca), radar.Ai(sca, h_pol=True))
+        test_less(self, 0, radar.Ai(sca, h_pol=True))
+        test_less(self, 0, radar.Ai(sca, h_pol=False))
+        # Check that we have differential attenuation
+        test_less(self, radar.Ai(sca, h_pol=False), radar.Ai(sca, h_pol=True))
+        
 
 def test_relative(tests, x, x_ref, limit=epsilon):
     abs_diff = abs(x-x_ref)
